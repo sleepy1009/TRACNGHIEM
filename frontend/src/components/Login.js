@@ -3,6 +3,7 @@ import { Container, TextField, Button, Typography, Box, Alert, Link as MuiLink }
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
+import backgroundImage from '../images/truonghoc_nen.jpg';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -19,7 +20,7 @@ function Login() {
 
   useEffect(() => {
     if (searchParams.get('success') === 'registered') {
-      setSuccessMessage('Registration successful! Please log in.');
+      setSuccessMessage('Đăng ký thành công! Vui lòng đăng nhập.');
       searchParams.delete('success');
       setSearchParams(searchParams);
 
@@ -146,65 +147,122 @@ function Login() {
   };
 
   return (
-    <Container maxWidth="xs">
-      <Box mt={8} display="flex" flexDirection="column" alignItems="center">
-        <Typography variant="h4">Đăng nhập</Typography>
-        {error && <Alert severity="error">{error}</Alert>} 
-        {successMessage && <Alert severity="success">{successMessage}</Alert>}
-        <Box component="form" mt={3} width="100%">
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
-            autoFocus
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <Button
-            type="button"
-            fullWidth
-            variant="contained"
-            color="primary"
-            sx={{ mt: 3, mb: 2 }}
-            onClick={handleLogin}
-          >
-            Đăng nhập 
-          </Button>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        width: '100%',
+        display: 'flex',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: '100%', 
+          backgroundImage: `linear-gradient(rgba(20, 20, 20, 0.6), rgba(20, 20, 20, 0.6)), url(${backgroundImage})`, 
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: -1,
+        }
+      }}
+    >
+      <Container
+        maxWidth="xs"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: 3,
+          backgroundColor: 'white',
+          backdropFilter: 'blur(10px)',
+          minHeight: '10vh',
+          width: '40%', 
+          mt: 8, 
+          mb: 8,
+          borderRadius: '16px', 
+          '& .MuiTextField-root': {
+            borderRadius: '8px', 
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '8px',  
+            }
+          },
+          '& .MuiButton-contained': {
+            borderRadius: '8px', 
+          }
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <Typography variant="h4" sx={{ mb: 3, fontFamily:"Roboto Slab" }}>Đăng nhập</Typography>
+          {error && <Alert severity="error" sx={{ mb: 2, width: '100%' }}>{error}</Alert>} 
+          {successMessage && <Alert severity="success" sx={{ mb: 2, width: '100%' }}>{successMessage}</Alert>}
+          
+          <Box component="form" sx={{ width: '100%' }}>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
+              autoFocus
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <Button
+              type="button"
+              fullWidth
+              variant="contained"
+              color="primary"
+              sx={{ mt: 3, mb: 2,fontFamily:"Roboto Slab" }}
+              onClick={handleLogin}
+            >
+              Đăng nhập 
+            </Button>
 
-          <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={() => {
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+              <GoogleLogin
+                onSuccess={handleGoogleLoginSuccess}
+                onError={() => {
                   console.log('Login Failed');
                   setError('Google login failed.');
-              }}
-          />
-          <Box mt={2} textAlign="center">
-            <MuiLink component={Link} to="/register" variant="body2">
-              Chưa có tài khoản? Đăng ký tại đây.
-            </MuiLink>
+                }}
+              />
+            </Box>
+
+            <Box textAlign="center">
+              <MuiLink component={Link} to="/register" variant="body2">
+                Chưa có tài khoản? Đăng ký tại đây.
+              </MuiLink>
+            </Box>
           </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </Box>
   );
+
 }
 
 export default Login;

@@ -1,80 +1,154 @@
 const Question = require('../models/Question');
-const TestResult = require('../models/TestResult'); 
+const TestResult = require('../models/TestResult');
 const Subject = require('../models/Subject');
 
-exports.getQuestionsBySubject = async (req, res) => {
+exports.getQuestionsBySemester = async (req, res) => {
   try {
-    const { subjectId } = req.params;
-    const questions = await Question.find({ subjectId }).select('-correctAnswer'); 
-    res.status(200).json(questions);
+    const { subjectId, semester } = req.params;
+    const { setNumber } = req.query;
+
+    const query = {
+      subjectId,
+      semester: parseInt(semester)
+    };
+
+    if (setNumber) {
+      query.setNumber = parseInt(setNumber);
+    }
+
+    const questions = await Question.find(query)
+      .select('questionText options correctAnswer setNumber')
+      .lean()
+      .exec();
+
+    const validatedQuestions = questions.map((question, index) => {
+      const correctAnswer = parseInt(question.correctAnswer);
+      
+      if (isNaN(correctAnswer) || correctAnswer < 0 || correctAnswer >= question.options.length) {
+        console.error(`Invalid correctAnswer for question ${index + 1}:`, question);
+        throw new Error(`Invalid correctAnswer for question ${index + 1}`);
+      }
+
+      return {
+        ...question,
+        correctAnswer,
+      };
+    });
+
+    res.status(200).json(validatedQuestions);
+
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('Error:', error);
+    res.status(500).json({ 
+      message: error.message || 'Server error',
+      error: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
 
 exports.submitAnswers = async (req, res) => {
   try {
-    const { subjectId, answers, timeSpent, questionSet } = req.body;
     const userId = req.userId;
+    const {
+      subjectId,
+      answers,
+      timeSpent,
+      questionSet,
+      semester,
+      setNumber
+    } = req.body;
 
-    if (!subjectId || !answers || typeof answers !== 'object') {
-      return res.status(400).json({ message: 'Invalid request data.' });
-    }
-
-    const questions = await Question.find({ subjectId });
-
-    if (!questions || questions.length === 0) {
-      return res.status(404).json({ message: 'No questions found for this subject.' });
+    if (!subjectId || !answers || !questionSet || !Array.isArray(questionSet)) {
+      return res.status(400).json({
+        message: 'Invalid submission data'
+      });
     }
 
     const subject = await Subject.findById(subjectId);
     if (!subject) {
-      return res.status(404).json({ message: 'Subject not found.' });
+      return res.status(404).json({
+        message: 'Subject not found'
+      });
     }
-    const classId = subject.classId;
 
-    let correctCount = 0;
-    const totalQuestions = questions.length;
+    let score = 0;
+      const validatedQuestionSet = questionSet.map(question => {
+      const correctAnswer = parseInt(question.correctAnswer);
+      const userAnswer = parseInt(question.userAnswer); 
+        console.log(`Backend - Question: ${question.questionText}, correctAnswer: ${correctAnswer}, userAnswer: ${userAnswer}`);
 
-    const processedQuestionSet = questions.map(question => {
-      const userAnswer = answers[question._id.toString()];
-      const isCorrect = userAnswer === question.correctAnswer;
-      if (isCorrect) correctCount++;
+
+      if (isNaN(correctAnswer) || correctAnswer < 0 || correctAnswer >= question.options.length) {
+        console.error(`Invalid correctAnswer on backend for question: ${question.questionText}`);
+        return { ...question, isCorrect: false };
+      }
+
+      const isCorrect = !isNaN(userAnswer) && correctAnswer === userAnswer;
+      if (isCorrect) {
+        score++;
+         console.log(`Backend - Question is correct. Current score: ${score}`);
+      } else {
+           console.log(`Backend - Question is incorrect.`);
+      }
 
       return {
-        questionId: question._id,
-        questionText: question.questionText,
-        options: question.options,
-        correctAnswer: question.correctAnswer,
-        userAnswer 
+        ...question,
+        correctAnswer, 
+        userAnswer: isNaN(userAnswer) ? null : userAnswer, 
+        isCorrect
       };
     });
 
     const newTestResult = new TestResult({
       userId,
       subjectId,
-      classId,
-      score: correctCount,
-      totalQuestions,
-      answers, 
-      timeSpent: timeSpent || 0,
-      questionSet: processedQuestionSet,
+      classId: subject.classId,
+      semester: parseInt(semester),
+      setNumber: parseInt(setNumber),
+      score,
+      totalQuestions: questionSet.length,
+      answers,
+      timeSpent,
+      questionSet: validatedQuestionSet,
+      date: new Date()
     });
 
     await newTestResult.save();
 
     res.status(200).json({
-      message: 'Answers submitted successfully.',
-      score: correctCount,
-      totalQuestions,
-      questions: processedQuestionSet, 
-      selectedAnswers: answers,
-      timeSpent
+      message: 'Test submitted successfully',
+      score,
+      totalQuestions: questionSet.length,
+      questions: validatedQuestionSet,
+      timeSpent,
+      semester,
+      setNumber
     });
 
   } catch (error) {
+    console.error('Submit error:', error);
+    res.status(500).json({ 
+      message: 'Error submitting test',
+      error: error.message 
+    });
+  }
+};
+
+exports.getQuestionsBySubject = async (req, res) => {
+  try {
+    const { subjectId } = req.params;
+    const questions = await Question.find({ subjectId })
+      .select('-correctAnswer')
+      .sort({ semester: 1 }); 
+
+    const questionsBySemester = {
+      1: questions.filter(q => q.semester === 1),
+      2: questions.filter(q => q.semester === 2)
+    };
+
+    res.status(200).json(questionsBySemester);
+  } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error during answer submission.' });
+    res.status(500).json({ message: 'Server error' });
   }
 };

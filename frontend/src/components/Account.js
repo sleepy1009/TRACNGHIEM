@@ -36,6 +36,7 @@ function Account() {
     const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         const fetchUserData = async () => {
             const token = localStorage.getItem('token');
             if (!token) {
@@ -162,7 +163,7 @@ function Account() {
                                 {getInitials(userData.displayName || 'User')}
                             </Avatar>
                             <Box>
-                                <Typography variant="h4" gutterBottom>
+                                <Typography variant="h4" gutterBottom fontFamily="Roboto Slab" fontWeight={"bold"}>
                                     {userData.displayName}
                                 </Typography>
                                 <Typography variant="subtitle1" color="textSecondary">
@@ -178,7 +179,7 @@ function Account() {
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                                    <Typography variant="h6" component="div">
+                                    <Typography variant="h6" component="div" fontFamily="Roboto Slab">
                                         Thông tin cá nhân
                                     </Typography>
                                     {!editMode ? (
@@ -285,24 +286,24 @@ function Account() {
                         <Card sx={{ height: '100%' }}>
                             <CardContent>
                                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                                    <Typography variant="h6" component="div">
-                                        Thông kê
+                                    <Typography variant="h6" component="div" fontFamily="Roboto Slab">
+                                        Thống kê
                                     </Typography>
                                     <HistoryIcon color="primary" />
                                 </Box>
                                 <Divider sx={{ mb: 3 }} />
                                 <Box sx={{ mb: 3 }}>
-                                    <Typography variant="body2" color="textSecondary" gutterBottom>
+                                    <Typography variant="body2" color="textSecondary" gutterBottom >
                                         Hoạt động gần đây
                                     </Typography>
                                     <Typography variant="body1" gutterBottom>
-                                        Số bài đã làm: XX
+                                        Số bài đã làm: xx
                                     </Typography>
                                     <Typography variant="body1" gutterBottom>
-                                        Điểm trung bình: XX%
+                                        Điểm trung bình: xx%
                                     </Typography>
                                     <Typography variant="body1" gutterBottom>
-                                        Lần kiểm tra cuối: XX/XX/XXXX
+                                        Lần kiểm tra cuối: xx/xx/xxxx
                                     </Typography>
                                 </Box>
                                 <Button
@@ -312,6 +313,12 @@ function Account() {
                                     to="/test-history"
                                     startIcon={<HistoryIcon />}
                                     fullWidth
+                                    sx={{ 
+                                        mt: 2,
+                                        fontWeight:"bold",
+                                        fontFamily:"Roboto Slab"
+                                      }}
+                                    
                                 >
                                     Xem lịch sử kiểm tra
                                 </Button>

@@ -19,6 +19,36 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 function Footer() {
   const currentYear = new Date().getFullYear();
 
+  const quizLinks = [
+    {
+      name: "Hocmai",
+      url: "https://hocmai.vn/",
+      description: " "
+    },
+    {
+      name: "Khan Academy",
+      url: "https://www.khanacademy.org/",
+      description: " "
+    },
+    {
+      name: "Hoc247",
+      url: "https://hoc247.vn/",
+      description: " "
+    },
+    {
+      name: "Violympic",
+      url: "https://violympic.vn/",
+      description: " "
+    },
+    {
+      name: "Ebook.edu",
+      url: "https://doc.edu.vn/",
+      description: " "
+    }
+  ];
+
+  
+
   return (
     <Box
       component="footer"
@@ -44,11 +74,42 @@ function Footer() {
         <Grid container spacing={4} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-              Quiz 
+              Trang web học tập khác
             </Typography>
-            <Typography variant="body2" sx={{ mb: 2 }}>
-              
-            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              {quizLinks.map((link, index) => (
+                <Box key={index}>
+                  <Link
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    color="inherit"
+                    sx={{
+                      textDecoration: 'none',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        textDecoration: 'underline',
+                        opacity: 0.8,
+                        transform: 'translateX(5px)'
+                      },
+                      display: 'block'
+                    }}
+                  >
+                    {link.name}
+                  </Link>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      display: 'block',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      fontSize: '0.75rem'
+                    }}
+                  >
+                    {link.description}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
@@ -56,8 +117,23 @@ function Footer() {
               Truy cập nhanh 
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-              <Link href="/" color="inherit" sx={{ mb: 1 }}>
-                Trang chủ 
+              <Link
+                  href="/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  color="inherit"
+                  sx={{
+                    textDecoration: 'none',
+                    transition: 'all 0.3s ease',
+                    '&:hover': {
+                      textDecoration: 'underline',
+                      opacity: 0.8,
+                      transform: 'translateX(5px)'
+                    },
+                    display: 'block'
+                  }}
+                >
+                  Trang chủ
               </Link>
             </Box>
           </Grid>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link as MuiLink} from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
+import backgroundImage from '../images/truonghoc_nen.jpg';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -14,7 +15,7 @@ function Register() {
     setError(''); 
 
     if (!username || !email || !password || !confirmPassword) {
-      setError('All fields are required.');
+      setError('Tất cả các trường không được trống.');
       return;
     }
 
@@ -83,80 +84,144 @@ function Register() {
   };
 
   return (
-    <Container maxWidth="xs">
-      <Box mt={8} display="flex" flexDirection="column" alignItems="center">
-        <Typography variant="h4">Đăng ký</Typography>
-        {error && <Alert severity="error">{error}</Alert>}
-        <Box component="form" mt={3} width="100%">
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="username"
-            label="Username"
-            name="username"
-            autoComplete="username"
-            autoFocus
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="confirmPassword"
-            label="Confirm Password"
-            type="password"
-            id="confirmPassword"
-            autoComplete="new-password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-          <Button
-            type="button"
-            fullWidth
-            variant="contained"
-            color="primary"
-            sx={{ mt: 3, mb: 2 }}
-            onClick={handleRegister}
-          >
-            Đăng ký 
-          </Button>
-          <Box mt={2} textAlign="center">
-            <MuiLink component={Link} to="/login" variant="body2">
-              Đã có tài khoản? Đăng nhập tại đây.
-            </MuiLink>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        width: '100%',
+        display: 'flex',
+        position: 'relative',
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          bottom: 0,
+          width: '100%',
+          backgroundImage: `linear-gradient(rgba(20, 20, 20, 0.6), rgba(20, 20, 20, 0.6)), url(${backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          zIndex: -1,
+        }
+      }}
+    >
+      <Container
+        maxWidth="xs"
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          padding: 3,
+          backgroundColor: 'white',
+          backdropFilter: 'blur(10px)',
+          minHeight: '10vh',
+          width: '40%',
+          mt: 8,
+          mb: 8,
+          borderRadius: '16px',
+          '& .MuiTextField-root': {
+            borderRadius: '8px',
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '8px',
+            }
+          },
+          '& .MuiButton-contained': {
+            borderRadius: '8px',
+          }
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            width: '100%',
+          }}
+        >
+          <Typography variant="h4" sx={{ mb: 3,fontFamily:"Roboto Slab" }}>Đăng ký</Typography>
+          {error && <Alert severity="error" sx={{ mb: 2, width: '100%', borderRadius: '8px' }}>{error}</Alert>}
+
+          <Box component="form" sx={{ width: '100%' }}>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
+              autoFocus
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              id="confirmPassword"
+              autoComplete="new-password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <Button
+              type="button"
+              fullWidth
+              variant="contained"
+              color="primary"
+              sx={{ mt: 3, mb: 2,fontFamily:"Roboto Slab" }}
+              onClick={handleRegister}
+            >
+              Đăng ký
+            </Button>
+
+            <Box textAlign="center">
+              <MuiLink 
+                component={Link} 
+                to="/login" 
+                variant="body2"
+                sx={{
+                  textDecoration: 'none',
+                  '&:hover': {
+                    textDecoration: 'underline'
+                  }
+                }}
+              >
+                Đã có tài khoản? Đăng nhập tại đây.
+              </MuiLink>
+            </Box>
           </Box>
         </Box>
-      </Box>
-    </Container>
+      </Container>
+    </Box>
   );
 }
 

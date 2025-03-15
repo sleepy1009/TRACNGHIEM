@@ -51,38 +51,46 @@ function TestHistory() {
 
   return (
     <Container maxWidth="md">
-      <Box mt={8}>
-        <Typography variant="h4" gutterBottom>
-          Test History
-        </Typography>
-        {testHistory.length === 0 ? (
-          <Typography>No tests taken yet.</Typography>
-        ) : (
-          <List>
-            {testHistory.map((test) => (
-              <React.Fragment key={test._id}>
-                <ListItem>
-                  <ListItemText
-                    primary={`${test.subjectId.name} - ${test.classId.name}`}
-                    secondary={`Ngày: ${new Date(test.date).toLocaleString()} - Điểm: ${test.score} / ${test.totalQuestions}`}
-                  />
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      component={Link}
-                      to={`/test-history/${test._id}`}
-                    >
-                      Chi tiết
-                    </Button>
-                </ListItem>
-                <Divider />
-              </React.Fragment>
-            ))}
-          </List>
-        )}
-      </Box>
+        <Box mt={8}>
+            <Typography variant="h4" gutterBottom fontFamily="Roboto Slab">
+                Lịch sử kiểm tra 
+            </Typography>
+            {testHistory.length === 0 ? (
+                <Typography>No tests taken yet.</Typography>
+            ) : (
+                <List>
+                    {testHistory.map((test) => (
+                        <React.Fragment key={test._id}>
+                            <ListItem>
+                                <ListItemText
+                                    primary={`${test.subjectId.name} - ${test.classId.name}`}
+                                    secondary={
+                                        <>
+                                            Học kỳ: {test.semester}, Bộ đề số: {test.setNumber}
+                                            <br />
+                                            {`Ngày: ${new Date(test.date).toLocaleString()}`}
+                                            <br />
+                                            {`Điểm: ${test.score} / ${test.totalQuestions}`}
+                                        </>
+                                    }
+                                />
+                                <Button
+                                    variant="outlined"
+                                    color="primary"
+                                    component={Link}
+                                    to={`/test-history/${test._id}`}
+                                >
+                                    Chi tiết
+                                </Button>
+                            </ListItem>
+                            <Divider />
+                        </React.Fragment>
+                    ))}
+                </List>
+            )}
+        </Box>
     </Container>
-  );
+);
 }
 
 export default TestHistory;

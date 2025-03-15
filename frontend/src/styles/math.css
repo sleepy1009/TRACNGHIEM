@@ -1,0 +1,12 @@
+.math-tex {
+    font-size: inherit;
+    line-height: 1.5;
+  }
+  
+  .math-tex .MathJax {
+    outline: none;
+  }
+  
+  .math-tex p {
+    margin: 1em 0;
+  }

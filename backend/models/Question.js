@@ -6,10 +6,10 @@ const questionSchema = new Schema({
   questionText: { type: String, required: true },
   options: [{ type: String, required: true }],
   correctAnswer: { type: Number, required: true },
-  difficulty: { type: String, enum: ['easy', 'medium', 'hard'], default: 'medium' },
-  points: { type: Number, default: 1 }
+  semester: { type: Number, enum: [1, 2], required: true }, 
+  setNumber: { type: Number, required: true },
 }, { timestamps: true });
-
+questionSchema.index({ subjectId: 1, semester: 1 });
 const Question = mongoose.model('Question', questionSchema);
 
 module.exports = Question;

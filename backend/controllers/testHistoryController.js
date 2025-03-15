@@ -1,5 +1,6 @@
 const TestResult = require('../models/TestResult');
 const Question = require('../models/Question');
+const User = require('../models/User');
 
 exports.getTestHistory = async (req, res) => {
   try {
@@ -23,14 +24,20 @@ exports.getTestDetail = async (req, res) => {
     const userId = req.userId;
 
     const testResult = await TestResult.findOne({ _id: testId, userId })
-      .populate('subjectId', 'name')
-      .populate('classId', 'name');
+      .populate('subjectId', 'name')  
+      .populate('classId', 'name');  
+
+    console.log("testResult after populate:", testResult); 
 
     if (!testResult) {
       return res.status(404).json({ message: 'Test result not found.' });
     }
 
-    res.status(200).json(testResult);
+    const user = await User.findById(userId);
+    const displayName = user ? user.displayName : 'Unknown User';
+
+    res.status(200).json({ ...testResult.toObject(), displayName });
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error fetching test detail.' });
@@ -55,7 +62,7 @@ exports.downloadTestReport = async (req, res) => {
     reportContent += `Môn: ${testResult.subjectId.name}\n`;
     reportContent += `Lớp: ${testResult.classId.name}\n`;
     reportContent += `Ngày: ${new Date(testResult.date).toLocaleString()}\n`;
-    reportContent += `Score: ${testResult.score} / ${testResult.totalQuestions}\n`;
+    reportContent += `Số câu đúng: ${testResult.score} / ${testResult.totalQuestions}\n`;
     reportContent += `Thời gian làm bài: ${Math.floor(testResult.timeSpent / 60)}:${(testResult.timeSpent % 60).toString().padStart(2, '0')}\n\n`;
     reportContent += `Đáp án và câu hỏi:\n\n`;
 

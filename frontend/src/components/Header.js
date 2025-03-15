@@ -30,12 +30,12 @@ function Header() {
 
    
   return (
-    <AppBar position="static">
-      <Toolbar>
+    <AppBar position="static"  sx={{ marginBottom: 0 }}>
+      <Toolbar sx={{ paddingTop: 0, paddingBottom: 0 }}>
         <IconButton edge="start" color="inherit" aria-label="home" component={Link} to="/">
           <HomeIcon />
         </IconButton>
-        <Typography variant="h6" sx={{ flexGrow: 1, ml: 2 }}>
+        <Typography variant="h6" sx={{ flexGrow: 1, ml: 2, fontFamily:"Roboto Slab" }}>
           {isAuthenticated ? `Xin chào, ${displayName}!` : 'Trắc nghiệm'} 
         </Typography>
 
@@ -75,19 +75,19 @@ function Header() {
 
         {isAuthenticated ? (
           <>
-            <Button color="inherit" component={Link} to="/account" sx={{ mr: 1 }}>
+            <Button color="inherit" component={Link} to="/account" sx={{ mr: 1,fontFamily:"Roboto Slab" }}>
               Tài khoản 
             </Button>
-            <Button color="inherit" onClick={handleLogout}>
+            <Button color="inherit" sx={{ mr: 1,fontFamily:"Roboto Slab" }} onClick={handleLogout}>
               Đăng xuất 
             </Button>
           </>
         ) : (
           <>
-            <Button color="inherit" component={Link} to="/login" sx={{ mr: 1 }}>
+            <Button color="inherit" component={Link} to="/login" sx={{ mr: 1,fontFamily:"Roboto Slab" }}>
               Đăng nhập 
             </Button>
-            <Button color="inherit" component={Link} to="/register">
+            <Button color="inherit" sx={{ mr: 1,fontFamily:"Roboto Slab" }} component={Link} to="/register">
               Đăng ký 
             </Button>
           </>

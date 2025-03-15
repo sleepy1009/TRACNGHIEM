@@ -25,15 +25,18 @@ import {
   Info as InfoIcon,
   PlayArrow as PlayArrowIcon,
 } from '@mui/icons-material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-function TestInstructions({ subjectName, questionCount, timeLimit }) {
+function TestInstructions() {
   const navigate = useNavigate();
   const { subjectId } = useParams();
   const { isAuthenticated } = useAuth();
   const [message, setMessage] = React.useState('');
   const [acceptedRules, setAcceptedRules] = React.useState(false);
+
+  const location = useLocation();
+  const { subjectName, questionCount, timeLimit, semester, setNumber, questions } = location.state || {};
 
   const testSteps = [
     'Đọc hướng dẫn',
@@ -55,7 +58,14 @@ function TestInstructions({ subjectName, questionCount, timeLimit }) {
       setMessage('Vui lòng chấp nhận các quy tắc kiểm tra trước khi bắt đầu.');
       return;
     }
-    navigate(`/test/${subjectId}`);
+    //  TestTaking
+    navigate(`/test/${subjectId}`, {
+        state: {
+            semester,  
+            setNumber,
+            questions
+        }
+    });
   };
 
   return (
@@ -71,11 +81,11 @@ function TestInstructions({ subjectName, questionCount, timeLimit }) {
             textAlign: 'center'
           }}
         >
-          <Typography variant="h3" gutterBottom>
+          <Typography variant="h3" gutterBottom fontFamily={"Roboto Slab"}>
             {subjectName}
           </Typography>
           <Typography variant="h5">
-            Giới thiệu tổng quan 
+            Giới thiệu tổng quan
           </Typography>
         </Paper>
 
@@ -94,7 +104,7 @@ function TestInstructions({ subjectName, questionCount, timeLimit }) {
             <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <QuestionIcon color="primary" sx={{ mr: 1 }} />
-                <Typography variant="h6">Tổng quan bài kiểm tra</Typography>
+                <Typography variant="h6" fontFamily={"Roboto Slab"}>Tổng quan bài kiểm tra</Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
               <List>
@@ -133,7 +143,7 @@ function TestInstructions({ subjectName, questionCount, timeLimit }) {
             <Paper elevation={2} sx={{ p: 3, height: '100%' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <WarningIcon color="warning" sx={{ mr: 1 }} />
-                <Typography variant="h6">Quy tắc</Typography>
+                <Typography variant="h6" fontFamily={"Roboto Slab"}>Quy tắc</Typography>
               </Box>
               <Divider sx={{ mb: 2 }} />
               <List>
@@ -176,6 +186,7 @@ function TestInstructions({ subjectName, questionCount, timeLimit }) {
                 px: 4,
                 py: 1.5,
                 fontSize: '1.1rem',
+                fontFamily: "Roboto Slab",
                 transition: 'transform 0.2s',
                 '&:hover': {
                   transform: 'scale(1.02)'

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import generateTestReport from './ReportGenerator';
-import { useAuth } from '../contexts/AuthContext';
-import { formatLatex, renderMathContent, initMathJax } from '../utils/mathUtils';
+import {renderMathContent, initMathJax } from '../utils/mathUtils';
 import DOMPurify from 'dompurify';
 import { 
   Container, 
@@ -20,7 +19,6 @@ function TestDetail() {
   const [testResult, setTestResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user } = useAuth();
 
   useEffect(() => {
     if (testResult?.questionSet) {
@@ -62,7 +60,6 @@ function TestDetail() {
     if (!testResult) return;
 
     try {
-      const token = localStorage.getItem('token');
 
       // get displayName.  1 AuthContext, 2 localStorage, cuối cùng là "Unknown User"
       const displayName =  testResult.displayName;
@@ -99,9 +96,9 @@ function TestDetail() {
     }
   };
 
-  if (loading) return <div>Loading test details...</div>;
+  if (loading) return <div>Đang tải...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (!testResult) return <div>Test result not found.</div>;
+  if (!testResult) return <div>Không tìm thấy lịch sử kiểm tra.</div>;
   
 
   return (
@@ -136,7 +133,7 @@ function TestDetail() {
             Ngày: {new Date(testResult.date).toLocaleString()}
           </Typography>
           <Typography variant="body1">
-            Score: {testResult.score} / {testResult.totalQuestions}
+            Điểm: {testResult.score} / {testResult.totalQuestions}
           </Typography>
           <Typography variant="body1">
             Thời gian làm bài: {Math.floor(testResult.timeSpent / 60)}:{(testResult.timeSpent % 60).toString().padStart(2, '0')}

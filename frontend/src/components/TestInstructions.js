@@ -70,11 +70,11 @@ function TestInstructions() {
 
   return (
     <Container maxWidth="md">
-      <Box sx={{ py: 4 }}>
+      <Box sx={{ py: 0 }}>
         <Paper 
           elevation={3} 
           sx={{ 
-            p: 4, 
+            p: 2, 
             mb: 4, 
             background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
             color: 'white',

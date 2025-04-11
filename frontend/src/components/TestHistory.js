@@ -10,6 +10,7 @@ function TestHistory() {
   const { logout } = useAuth();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchTestHistory = async () => {
       setLoading(true);
       setError(null);
@@ -42,7 +43,7 @@ function TestHistory() {
   }, [logout]);
 
   if (loading) {
-    return <div>Loading test history...</div>;
+    return <div>Đang tải...</div>;
   }
 
   if (error) {

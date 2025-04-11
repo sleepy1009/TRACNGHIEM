@@ -13,8 +13,8 @@ import X from '@mui/icons-material/X';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import EmailIcon from '@mui/icons-material/Email';
-import PhoneIcon from '@mui/icons-material/Phone';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import backgroundImage from '../images/idk22.png';
+
 
 function Footer() {
   const currentYear = new Date().getFullYear();
@@ -44,6 +44,11 @@ function Footer() {
       name: "Ebook.edu",
       url: "https://doc.edu.vn/",
       description: " "
+    },
+    {
+      name: "Moon.vn",
+      url: "https://moon.vn/",
+      description: " "
     }
   ];
 
@@ -53,7 +58,7 @@ function Footer() {
     <Box
       component="footer"
       sx={{
-        backgroundColor: 'primary.main',
+        backgroundImage: `linear-gradient(rgba(20, 20, 20, 0.6), rgba(20, 20, 20, 0.6)), url(${backgroundImage})`,
         color: 'white',
         pt: 8, 
         pb: 4, 
@@ -66,14 +71,13 @@ function Footer() {
           left: 0,
           right: 0,
           height: '4px',
-          background: 'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 100%)'
         }
       }}
     >
       <Container maxWidth="lg" sx={{ mb: 4 }}>
         <Grid container spacing={4} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', fontFamily:"Roboto Slab" }}>
               Trang web học tập khác
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -113,7 +117,7 @@ function Footer() {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', fontFamily:"Roboto Slab" }}>
               Truy cập nhanh 
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -139,7 +143,7 @@ function Footer() {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', fontFamily:"Roboto Slab" }}>
               Liên hệ 
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -151,7 +155,7 @@ function Footer() {
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
+            <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', fontFamily:"Roboto Slab" }}>
               Theo dõi 
             </Typography>
             <Box>
@@ -171,17 +175,17 @@ function Footer() {
           </Grid>
         </Grid>
 
-        <Divider sx={{ my: 4, borderColor: 'rgba(255, 255, 255, 0.12)' }} />
+        <Divider sx={{ my: 1, borderColor: 'rgba(255, 255, 255, 0.12)' }} />
 
         <Box sx={{ 
           textAlign: 'center',
-          pt: 3,
-          pb: 2 
+          pt: 0,
+          pb: 0 
         }}>
-          <Typography variant="body2" color="inherit">
+          <Typography variant="body2" color="inherit" >
             © {currentYear} Quiz Website. All rights reserved.
           </Typography>
-          <Box sx={{ mt: 1 }}>
+          <Box >
             {/*
             <Link href="/privacy" color="inherit" sx={{ mx: 1 }}>
               Privacy Policy

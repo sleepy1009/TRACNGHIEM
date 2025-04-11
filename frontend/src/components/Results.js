@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import generateTestReport from './ReportGenerator';
 import { formatLatex, renderMathContent, initMathJax } from '../utils/mathUtils';
 import DOMPurify from 'dompurify';
+import { keyframes } from '@mui/system';
 
 import { 
   Container, 
@@ -116,6 +117,7 @@ function Results() {
         const userAnswer = parseInt(question.userAnswer);
         return !isNaN(correctAnswer) && !isNaN(userAnswer) && correctAnswer === userAnswer;
     };
+    
     
     
     return (

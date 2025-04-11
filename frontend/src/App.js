@@ -40,7 +40,8 @@ function App() {
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        pb: shouldShowFooter ? 8 : 0 
+        pb: shouldShowFooter ? 8 : 0,
+        
       }}> 
         <Routes>
           <Route path="/" element={<Introduction />} />

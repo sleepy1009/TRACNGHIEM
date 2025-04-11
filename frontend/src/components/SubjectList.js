@@ -368,7 +368,7 @@ function SubjectList() {
           />
           <Chip
             icon={<TimerIcon />}
-            label="45 mins"
+            label="45 phút"
             size="small"
             color="secondary"
             variant="outlined"

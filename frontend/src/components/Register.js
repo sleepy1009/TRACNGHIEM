@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Typography, Box, Alert, Link as MuiLink} from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
-import backgroundImage from '../images/truonghoc_nen.jpg';
+import backgroundImage from '../images/idk22.png';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -20,12 +20,12 @@ function Register() {
     }
 
     if (username.length < 3 || username.length > 20) {
-      setError('Username must be between 3 and 20 characters.');
+      setError('Tên người dùng phải có từ 3 đến 20 ký tự.');
       return;
     }
 
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters.');
+    if (password.length < 8 || password.length > 32) {
+      setError('Mật khẩu phải có từ 8 đến 32 ký tự.');
       return;
     }
     const hasUpperCase = /[A-Z]/.test(password);
@@ -34,11 +34,11 @@ function Register() {
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
     if (!(hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar)) {
-        let errorMessage = "Password must contain at least:";
-        if (!hasUpperCase) errorMessage += " one uppercase letter,";
-        if (!hasLowerCase) errorMessage += " one lowercase letter,";
-        if (!hasNumber) errorMessage += " one number,";
-        if (!hasSpecialChar) errorMessage += " one special character,";
+        let errorMessage = "Mật khẩu phải chứa ít nhất:";
+        if (!hasUpperCase) errorMessage += " một chữ cái viết hoa,";
+        if (!hasLowerCase) errorMessage += " một chữ cái thường,";
+        if (!hasNumber) errorMessage += " một số,";
+        if (!hasSpecialChar) errorMessage += " một ký tự đặc biệt,";
 
         errorMessage = errorMessage.slice(0, -1) + ".";
         setError(errorMessage);
@@ -46,12 +46,12 @@ function Register() {
     }
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError('Mật khẩu không khớp.');
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError('Please enter a valid email address.');
+      setError('Vui lòng nhập địa chỉ email hợp lệ.');
       return;
     }
 
@@ -83,6 +83,82 @@ function Register() {
     }
   };
 
+  
+
+
+  const waterDropAnimation = `
+  @keyframes waterDrop {
+    0% {
+      transform: translateX(-50%) scale(0.85);
+      opacity: 1;
+    }
+    50% {
+      transform: translateX(-50%) scale(1.05);
+      opacity: 0.5;
+    }
+    100% {
+      transform: translateX(-50%) scale(0.85);
+      opacity: 1;
+    }
+  }
+
+  @keyframes ripple {
+    0% {
+      transform: translate(-50%, -50%) scale(0.8);
+      opacity: 1;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.1);
+      opacity: 0.3;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(0.8);
+      opacity: 1;
+    }
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateX(-50%) translateY(0px);
+    }
+    50% {
+      transform: translateX(-50%) translateY(-15px);
+    }
+    100% {
+      transform: translateX(-50%) translateY(0px);
+    }
+  }
+  `;
+
+  const animations = `
+  ${waterDropAnimation}
+
+  @keyframes borderAnimation {
+    0% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(180deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes borderGlow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  `;
+  
+
   return (
     <Box
       sx={{
@@ -104,20 +180,51 @@ function Register() {
         }
       }}
     >
+      <style>{animations}</style>
+
       <Container
         maxWidth="xs"
         sx={{
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
-          padding: 3,
+          padding: 0,
           backgroundColor: 'white',
           backdropFilter: 'blur(10px)',
+          opacity:0.9,
           minHeight: '10vh',
           width: '40%',
-          mt: 8,
-          mb: 8,
-          borderRadius: '16px',
+          mt: 12,
+          mb: 4,
+          borderRadius: '25px',
+          position: 'relative',
+          paddingTop: '125px',
+          paddingBottom: '20px',
+
+          overflow: 'hidden', // Ensure the pseudo-element doesn't overflow
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: -2,
+            left: -2,
+            right: -2,
+            bottom: -2,
+            background: 'linear-gradient(90deg, #91d7ff, #a6dfff, #734afb, #c6eeff)',
+            backgroundSize: '400% 400%',
+            animation: 'borderGlow 4s ease infinite, borderAnimation 8s linear infinite',
+            borderRadius: '25px',
+            zIndex: -1,
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            inset: '3px',
+            background: 'snow',
+            backdropFilter: 'blur(10px)',
+            borderRadius: '25px',
+            zIndex: -1,
+          },
+
           '& .MuiTextField-root': {
             borderRadius: '8px',
             '& .MuiOutlinedInput-root': {
@@ -129,15 +236,96 @@ function Register() {
           }
         }}
       >
+        {/* Animated title box */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: +30,
+            left: '50%',
+            backgroundColor: '#f6fafd',
+            padding: '15px 40px',
+            borderRadius: '50px',
+            boxShadow: '0 10px 20px rgba(180, 200, 211, 0.48)',
+            animation: 'float 3s ease-in-out infinite',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: '100%',
+              left: '50%',
+              width: '70%',
+              height: '15px',
+              background: 'rgba(178, 207, 236, 0.67)',
+              filter: 'blur(8px)',
+              borderRadius: '50%',
+              animation: 'ripple 2s ease-in-out infinite',
+            },
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              top: '115%',
+              left: '55%',
+              width: '25px',
+              height: '25px',
+              background: 'rgba(119, 203, 255, 0.53)',
+              borderRadius: '50%',
+              animation: 'waterDrop 2s ease-in-out infinite',
+            },
+            '& .water-circle': {
+              position: 'absolute',
+              borderRadius: '50%',
+              background: 'rgba(119, 203, 255, 0.53)',
+              animation: 'ripple 1.5s ease-in-out infinite',
+            }
+          }}
+        >
+          {/* Water effect circles */}
+          <Box
+            className="water-circle"
+            sx={{
+              width: '20px',
+              height: '20px',
+              top: '110%',
+              left: '30%',
+              animationDelay: '0.5s',
+            }}
+          />
+          <Box
+            className="water-circle"
+            sx={{
+              width: '15px',
+              height: '15px',
+              top: '115%',
+              left: '70%',
+              animationDelay: '0.7s',
+            }}
+          />
+
+          <Typography 
+            variant="h4" 
+            sx={{ 
+              color: '#5e789d',
+              fontFamily: "Roboto Slab",
+              fontWeight: 'bold',
+              fontSize: 25,
+              textAlign: 'center',
+              textShadow: '0 5px 4px rgba(115, 114, 114, 0.2)',
+              position: 'relative',
+              zIndex: 1,
+            }}
+          >
+            Đăng ký
+          </Typography>
+        </Box>
+
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
+            px: 3, // Add padding to the sides
           }}
         >
-          <Typography variant="h4" sx={{ mb: 3,fontFamily:"Roboto Slab" }}>Đăng ký</Typography>
           {error && <Alert severity="error" sx={{ mb: 2, width: '100%', borderRadius: '8px' }}>{error}</Alert>}
 
           <Box component="form" sx={{ width: '100%' }}>
@@ -147,7 +335,7 @@ function Register() {
               required
               fullWidth
               id="username"
-              label="Username"
+              label="Tên đăng nhập"
               name="username"
               autoComplete="username"
               autoFocus
@@ -160,7 +348,7 @@ function Register() {
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="Email"
               name="email"
               autoComplete="email"
               value={email}
@@ -172,7 +360,7 @@ function Register() {
               required
               fullWidth
               name="password"
-              label="Password"
+              label="Mật khẩu"
               type="password"
               id="password"
               autoComplete="new-password"
@@ -185,7 +373,7 @@ function Register() {
               required
               fullWidth
               name="confirmPassword"
-              label="Confirm Password"
+              label="Xác nhận mật khẩu"
               type="password"
               id="confirmPassword"
               autoComplete="new-password"
@@ -197,13 +385,24 @@ function Register() {
               fullWidth
               variant="contained"
               color="primary"
-              sx={{ mt: 3, mb: 2,fontFamily:"Roboto Slab" }}
+              sx={{ 
+                mt: 3,
+                mb: 2,
+                fontFamily: "Roboto Slab",
+                width: '40%',
+                height: '35px',
+                borderRadius: '50px !important',
+                margin: '12px auto',
+                display: 'block',
+                minWidth: '56px',
+                padding: '0',
+              }}
               onClick={handleRegister}
             >
               Đăng ký
             </Button>
 
-            <Box textAlign="center">
+            <Box textAlign="center" sx={{ mt: 2 }}>
               <MuiLink 
                 component={Link} 
                 to="/login" 

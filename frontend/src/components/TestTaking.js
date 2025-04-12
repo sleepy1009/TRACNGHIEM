@@ -115,6 +115,8 @@ function TestTaking() {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
   }, []);
 
+  
+
   // 5. submit handler
   const handleSubmit = useCallback(async () => {
     try {
@@ -135,7 +137,7 @@ function TestTaking() {
         console.log(`Question ${index + 1}: userAnswer=${userAnswer}, correctAnswer=${question.correctAnswer}`);
         
         if (userAnswer === question.correctAnswer) {
-          calculatedScore++;
+          calculatedScore += 0.25;
           console.log(`Question ${index + 1} is correct.  Current score: ${calculatedScore}`);
         } else { 
             console.log(`Question ${index + 1} is incorrect.`);
@@ -248,9 +250,9 @@ function TestTaking() {
       try {
         if (location.state?.questions) {
           const questionsWithCorrectAnswer = location.state.questions.map(q => {
-              console.log(`Processing question from location.state:`, q); // Log question
+              console.log(`Processing question from location.state:`, q); 
               const parsedCorrectAnswer = parseInt(q.correctAnswer);
-               console.log(`Parsed correctAnswer: ${parsedCorrectAnswer}, options length: ${q.options.length}`); // Log parsed 
+               console.log(`Parsed correctAnswer: ${parsedCorrectAnswer}, options length: ${q.options.length}`); 
 
               if (isNaN(parsedCorrectAnswer) || parsedCorrectAnswer < 0 || parsedCorrectAnswer >= q.options.length) {
                 console.error(`Invalid correctAnswer for question ID ${q._id}:`, q.correctAnswer);
@@ -258,7 +260,7 @@ function TestTaking() {
               }
             return {
                 ...q,
-                correctAnswer: parsedCorrectAnswer // use parsedCorrectAnswer?
+                correctAnswer: parsedCorrectAnswer 
             }
             });
           setQuestions(questionsWithCorrectAnswer);

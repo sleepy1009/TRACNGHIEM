@@ -56,13 +56,23 @@ function TestDetail() {
     fetchTestDetail();
   }, [testId]);
 
+  const calculateScores = (questionSet) => {
+    const correctAnswers = questionSet.filter(q => q.userAnswer === q.correctAnswer).length;
+    const actualScore = correctAnswers * 0.25;
+    const maxScore = questionSet.length * 0.25;
+    return { correctAnswers, actualScore, maxScore };
+  };
+
+  const formatScore = (score) => {
+    return score % 1 === 0 ? Math.floor(score) : score.toFixed(2);
+  };
+
   const handleDownload = async () => {
     if (!testResult) return;
 
     try {
-
-      // get displayName.  1 AuthContext, 2 localStorage, cuối cùng là "Unknown User"
-      const displayName =  testResult.displayName;
+      const displayName = testResult.displayName;
+      const { actualScore } = calculateScores(testResult.questionSet || []);
 
       const reportText = generateTestReport(
         testResult.subjectId?.name,
@@ -72,24 +82,23 @@ function TestDetail() {
         testResult.setNumber,
         testResult.questionSet || [],
         testResult.timeSpent,
-        testResult.score,
+        actualScore, 
         testResult.totalQuestions
       );
-        const blob = new Blob([reportText], { type: 'text/plain' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a'); 
-        a.href = url;
+      const blob = new Blob([reportText], { type: 'text/plain' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a'); 
+      a.href = url;
 
-        const subjectName = testResult.subjectId?.name || 'UnknownSubject';
-        const className = testResult.classId?.name || 'UnknownClass';
-        const dateString = testResult.date ? new Date(testResult.date).toISOString() : new Date().toISOString();
-        a.download = `test_report_${subjectName}_${className}_${dateString}.txt`;
+      const subjectName = testResult.subjectId?.name || 'UnknownSubject';
+      const className = testResult.classId?.name || 'UnknownClass';
+      const dateString = testResult.date ? new Date(testResult.date).toISOString() : new Date().toISOString();
+      a.download = `test_report_${subjectName}_${className}_${dateString}.txt`;
 
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
 
     } catch (error) {
       console.error("Could not download test report:", error);
@@ -99,7 +108,8 @@ function TestDetail() {
   if (loading) return <div>Đang tải...</div>;
   if (error) return <div>Error: {error}</div>;
   if (!testResult) return <div>Không tìm thấy lịch sử kiểm tra.</div>;
-  
+
+  const { correctAnswers, actualScore, maxScore } = calculateScores(testResult.questionSet || []);
 
   return (
     <Container maxWidth="md">
@@ -130,10 +140,10 @@ function TestDetail() {
             Học kỳ: {testResult.semester}, Bộ đề số: {testResult.setNumber}
           </Typography>
           <Typography variant="body1">
-            Ngày: {new Date(testResult.date).toLocaleString()}
+            Ngày và giờ: {new Date(testResult.date).toLocaleString()}
           </Typography>
           <Typography variant="body1">
-            Điểm: {testResult.score} / {testResult.totalQuestions}
+            Điểm: {formatScore(actualScore)}
           </Typography>
           <Typography variant="body1">
             Thời gian làm bài: {Math.floor(testResult.timeSpent / 60)}:{(testResult.timeSpent % 60).toString().padStart(2, '0')}

@@ -30,6 +30,10 @@ const userSchema = new Schema({
   },
   level: {
     type: String, 
+  },
+  avatarUrl: {
+    type: String,
+    default: ''
   }
 }, { timestamps: true });
 

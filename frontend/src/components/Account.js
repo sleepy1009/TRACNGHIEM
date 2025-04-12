@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { keyframes } from '@mui/system';
+import { AddAPhoto as AddAPhotoIcon } from '@mui/icons-material';
 import {
   Container,
   Typography,
@@ -10,10 +11,15 @@ import {
   Paper,
   Avatar,
   Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   Card,
   CardContent,
   Divider,
   IconButton,
+  CircularProgress,
   Tooltip
 } from '@mui/material';
 import {
@@ -23,6 +29,7 @@ import {
   Grade as GradeIcon,
   History as HistoryIcon,
   Save as SaveIcon,
+  StarBorder as StarBorderIcon,
   Cancel as CancelIcon,
   AccessTime as TimeIcon,
 } from '@mui/icons-material';
@@ -71,44 +78,184 @@ function Account() {
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
     const [searchParams, setSearchParams] = useSearchParams();
+    const [avatar, setAvatar] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [openPreview, setOpenPreview] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState('');
 
-    useEffect(() => {
-        window.scrollTo(0, 0);
-        const fetchUserData = async () => {
+    const handlePreview = () => {
+        if (avatar || userData.avatarUrl) {
+            const imageUrl = avatar || userData.avatarUrl;
+            const fullUrl = imageUrl.startsWith('http') 
+                ? imageUrl 
+                : `http://localhost:5000${imageUrl}`;
+            setPreviewUrl(fullUrl);
+            setOpenPreview(true);
+        }
+    };
+
+    const fetchUserData = async () => {
+        try {
             const token = localStorage.getItem('token');
-            if (!token) {
-                console.error("No token found");
-                logout();
+            const response = await fetch('http://localhost:5000/api/users/me', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+    
+            if (response.ok) {
+                const data = await response.json();
+                if (data.avatarUrl) {
+                    data.avatarUrl = `http://localhost:5000${data.avatarUrl}`;
+                }
+                setUserData(data);
+                setAvatar(data.avatarUrl);
+            }
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    };
+
+    const handleAvatarUpload = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            if (file.size > 5242880) {
+                setError('Kích thước ảnh không được vượt quá 5MB');
                 return;
             }
-
+    
+            setIsUploading(true);
+            setError('');
+            setMessage('');
+    
+            const previewUrl = URL.createObjectURL(file);
+    
+            const formData = new FormData();
+            formData.append('avatar', file);
+    
             try {
-                const response = await fetch('http://localhost:5000/api/users/me', {
+                const token = localStorage.getItem('token');
+                const response = await fetch('http://localhost:5000/api/users/avatar', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: formData,
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    const fullAvatarUrl = `http://localhost:5000${data.avatarUrl}`;
+                    setAvatar(fullAvatarUrl);
+                    setUserData(prev => ({
+                        ...prev,
+                        avatarUrl: fullAvatarUrl
+                    }));
+                    setMessage('Cập nhật ảnh đại diện thành công!');
+                } else {
+                    setError(data.message || 'Không thể tải lên ảnh. Vui lòng thử lại.');
+                }
+            } catch (error) {
+                console.error('Error uploading avatar:', error);
+                setError('Đã xảy ra lỗi khi tải lên ảnh');
+            } finally {
+                setIsUploading(false);
+                URL.revokeObjectURL(previewUrl);
+            }
+        }
+    };
+
+    const [statistics, setStatistics] = useState({
+        totalTests: 0,
+        averageScore: 0,
+        averageTime: 0
+      });
+    
+      const fetchUserStatistics = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch('http://localhost:5000/api/users/test-history', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const testHistory = await response.json();
+
+            const totalTests = testHistory.length;
+
+            const totalScore = testHistory.reduce((acc, test) => {
+                const correctAnswers = test.questionSet.filter(q => q.userAnswer === q.correctAnswer).length;
+                return acc + (correctAnswers * 0.25);
+            }, 0);
+            const averageScore = totalTests > 0 ? totalScore / totalTests : 0;
+
+            const totalTime = testHistory.reduce((acc, test) => acc + test.timeSpent, 0);
+            const averageTime = totalTests > 0 ? Math.round(totalTime / totalTests) : 0;
+
+            setStatistics({
+                totalTests,
+                averageScore,
+                averageTime,
+            });
+        } catch (error) {
+            console.error("Could not fetch test history:", error);
+        }
+    };
+    
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        fetchUserData();
+        const fetchData = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    console.error("No token found");
+                    logout();
+                    return;
+                }
+    
+                const userResponse = await fetch('http://localhost:5000/api/users/me', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+    
+                if (!userResponse.ok) {
+                    throw new Error(`HTTP error! status: ${userResponse.status}`);
                 }
-
-                const data = await response.json();
-                setUserData(data);
+    
+                const userData = await userResponse.json();
+                setUserData(userData);
+    
+                await fetchUserStatistics();
+    
             } catch (error) {
-                console.error("Could not fetch user data:", error);
+                console.error("Could not fetch data:", error);
                 setError('Failed to load user data.');
             }
         };
-
+    
         if (searchParams.get('success') === 'loggedin') {
             setMessage('Đăng nhập thành công!');
             searchParams.delete('success');
             setSearchParams(searchParams);
         }
-
-        fetchUserData();
+    
+        fetchData();
     }, [logout, searchParams, setSearchParams]);
+
+
+    const formatAverageTime = (seconds) => {
+       const minutes = Math.floor(seconds / 60);
+       const remainingSeconds = seconds % 60;
+       return `${minutes}'${remainingSeconds.toString().padStart(2, '0')}s`;
+    };
 
     const handleEdit = () => {
         setEditMode(true);
@@ -174,7 +321,7 @@ function Account() {
     const handleCancel = () => {
         setEditMode(false);
         setMessage('');
-        setError('Đảm bảo tên và email hợp lệ.');
+        //setError('Đảm bảo tên và email hợp lệ.');
     };
 
     const cardStyle = {
@@ -232,9 +379,12 @@ function Account() {
                 }}
             >
                 <Grid container spacing={4}>
-                    <Grid item xs={12}>
-                        <Box display="flex" alignItems="center" mb={3}>
+                <Grid item xs={12}>
+                    <Box display="flex" alignItems="center" mb={3}>
+                        <Box position="relative" display="inline-block">
                             <Avatar
+                                src={avatar || (userData.avatarUrl ? `http://localhost:5000${userData.avatarUrl}` : '')}
+                                onClick={handlePreview}
                                 sx={{
                                     width: 100,
                                     height: 100,
@@ -243,44 +393,151 @@ function Account() {
                                     mr: 3,
                                     animation: `${pulseAnimation} 2s infinite`,
                                     border: '4px solid',
-                                    borderColor: 'primary.light',
+                                    borderColor: '#000000',
                                     boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+                                    transition: 'all 0.3s ease',
+                                    cursor: 'pointer',
+                                    '&:hover': {
+                                        transform: 'scale(1.05)',
+                                        boxShadow: '0 6px 25px rgba(0,0,0,0.15)',
+                                    },
+                                    opacity: isUploading ? 0.7 : 1,
                                 }}
                             >
-                                {getInitials(userData.displayName || 'User')}
-                            </Avatar>
-                            <Box sx={{ animation: `${slideIn} 0.6s ease-out` }}>
-                                <Typography 
-                                    variant="h4" 
-                                    gutterBottom 
-                                    fontFamily="Roboto Slab" 
-                                    fontWeight="bold"
-                                    sx={{
-                                        background: 'linear-gradient(45deg,rgb(1, 1, 1) 30%,rgb(116, 116, 116) 90%)',
-                                        backgroundClip: 'text',
-                                        WebkitBackgroundClip: 'text',
-                                        color: 'transparent',
-                                    }}
-                                >
-                                    {userData.displayName}
-                                </Typography>
-                                <Typography 
-                                    variant="subtitle1" 
-                                    color="textSecondary"
-                                    sx={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: 1,
-                                    }}
-                                >
-                                    <TimeIcon fontSize="small" />
-                                    Thành viên kể từ {new Date().getFullYear()}
-                                </Typography>
-                            </Box>
-                        </Box>
-                        {message && <Alert severity="success" sx={{ mb: 2, animation: `${fadeIn} 0.6s ease-out` }}>{message}</Alert>}
-                        {error && <Alert severity="error" sx={{ mb: 2, animation: `${fadeIn} 0.6s ease-out` }}>{error}</Alert>}
-                    </Grid>
+                                {!avatar && !userData.avatarUrl && getInitials(userData.displayName || 'User')}
+                                {isUploading && (
+                                    <Box
+                                        position="absolute"
+                                        top={0}
+                                        left={0}
+                                        right={0}
+                                        bottom={0}
+                                        display="flex"
+                                        alignItems="center"
+                                        justifyContent="center"
+                                        bgcolor="rgba(0,0,0,0.3)"
+                                        borderRadius="50%"
+                                    >
+                                        <CircularProgress size={40} color="inherit" />
+                                    </Box>
+                                )}
+                                        </Avatar>
+
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            id="avatar-upload"
+                                            style={{ display: 'none' }}
+                                            onChange={handleAvatarUpload}
+                                            disabled={isUploading}
+                                        />
+                            
+                                        <label htmlFor="avatar-upload">
+                                            <IconButton
+                                                component="span"
+                                                disabled={isUploading}
+                                                sx={{
+                                                   position: 'absolute',
+                                                    bottom: -5,
+                                                    right: 8,
+                                                    backgroundColor: 'primary.main',
+                                                    color: 'white',
+                                                    '&:hover': {
+                                                        backgroundColor: 'primary.dark',
+                                                        transform: 'scale(1.1)',
+                                                    },
+                                                    width: 32,
+                                                    height: 32,
+                                                    '& .MuiSvgIcon-root': {
+                                                        fontSize: '1.2rem',
+                                                    },
+                                                    border: '2px solid white',
+                                                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                                                    transition: 'all 0.3s ease',
+                                                    transform: isUploading ? 'scale(0.9)' : 'scale(1)',
+                                                }}
+                                            >
+                                                {isUploading ? (
+                                                    <CircularProgress size={20} color="inherit" />
+                                                ) : (
+                                                    <AddAPhotoIcon />
+                                                )}
+                                            </IconButton>
+                                        </label>
+                                    </Box>
+                                    <Box sx={{ animation: `${slideIn} 0.6s ease-out` }}>
+                                        <Typography 
+                                            variant="h4" 
+                                            gutterBottom 
+                                            fontFamily="Roboto Slab" 
+                                            fontWeight="bold"
+                                            sx={{
+                                                background: 'linear-gradient(45deg,rgb(1, 1, 1) 30%,rgb(116, 116, 116) 90%)',
+                                                backgroundClip: 'text',
+                                                WebkitBackgroundClip: 'text',
+                                                color: 'transparent',
+                                            }}
+                                        >
+                                            {userData.displayName}
+                                        </Typography>
+                                        <Typography 
+                                            variant="subtitle1" 
+                                            color="textSecondary"
+                                            sx={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: 1,
+                                            }}
+                                        >
+                                            <TimeIcon fontSize="small" />
+                                            Thành viên kể từ {new Date().getFullYear()}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                                {message && (
+                                    <Alert 
+                                        severity="success" 
+                                        sx={{ mb: 2, animation: `${fadeIn} 0.6s ease-out` }}
+                                        onClose={() => setMessage('')}
+                                    >
+                                        {message}
+                                    </Alert>
+                                )}
+                                {error && (
+                                    <Alert 
+                                        severity="error" 
+                                        sx={{ mb: 2, animation: `${fadeIn} 0.6s ease-out` }}
+                                        onClose={() => setError('')}
+                                    >
+                                        {error}
+                                    </Alert>
+                                )}
+                            </Grid>
+
+                            <Dialog
+                        open={openPreview}
+                        onClose={() => setOpenPreview(false)}
+                        maxWidth="md"
+                    >
+                        <DialogTitle>Ảnh đại diện</DialogTitle>
+                        <DialogContent>
+                            <Box
+                                component="img"
+                                src={previewUrl}
+                                alt="Avatar preview"
+                                sx={{
+                                    maxWidth: '100%',
+                                    maxHeight: '70vh',
+                                    objectFit: 'contain',
+                                }}
+                            />
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => setOpenPreview(false)}>
+                                Đóng
+                            </Button>
+                        </DialogActions>
+                    </Dialog>
 
                     <Grid item xs={12} md={6}>
                         <Card sx={cardStyle}>
@@ -427,7 +684,7 @@ function Account() {
                                     <Typography variant="h6" component="div" fontFamily="Roboto Slab">
                                         Thống kê
                                     </Typography>
-                                    <HistoryIcon color="primary" />
+                                    <StarBorderIcon color="primary" />
                                 </Box>
                                 <Divider sx={{ mb: 3 }} />
                                 <Box sx={{ mb: 3 }}>
@@ -451,7 +708,7 @@ function Account() {
                                             <Grid item xs={4}>
                                                 <Box textAlign="center">
                                                     <Typography variant="h4" color="primary" fontWeight="bold">
-                                                        ?
+                                                        {statistics.totalTests}
                                                     </Typography>
                                                     <Typography variant="body2" color="textSecondary">
                                                         Bài đã làm
@@ -461,7 +718,7 @@ function Account() {
                                             <Grid item xs={4}>
                                                 <Box textAlign="center">
                                                     <Typography variant="h4" color="primary" fontWeight="bold">
-                                                        ?
+                                                        {statistics.averageScore.toFixed(2)}
                                                     </Typography>
                                                     <Typography variant="body2" color="textSecondary">
                                                         Điểm TB
@@ -471,7 +728,7 @@ function Account() {
                                             <Grid item xs={4}>
                                                 <Box textAlign="center">
                                                     <Typography variant="h4" color="primary" fontWeight="bold">
-                                                        ?
+                                                        {formatAverageTime(statistics.averageTime)}
                                                     </Typography>
                                                     <Typography variant="body2" color="textSecondary">
                                                         Thời gian TB

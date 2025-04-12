@@ -6,6 +6,9 @@ const generateTestReport = (subjectName, className, displayName, semester, setNu
             answeredCount++;
         }
     }
+    const formatScore = (score) => {
+        return score % 1 === 0 ? Math.floor(score) : score.toFixed(2);
+    };
 
     let report = `Kết quả kiểm tra môn: ${subjectName} - ${className}\n`;
     report += `Họ tên: ${displayName}\n`;
@@ -13,7 +16,7 @@ const generateTestReport = (subjectName, className, displayName, semester, setNu
     report += `Ngày: ${new Date().toLocaleString()}\n`;
     report += `Số câu trả lời: ${answeredCount} / ${questions.length}\n`;
     report += `Thời gian làm bài: ${Math.floor(timeSpent / 60)}:${(timeSpent % 60).toString().padStart(2, '0')}\n`;
-    report += `Số câu đúng: ${score} / ${totalQuestions}\n\n`;
+    report += `Điểm: ${formatScore(score)} \n\n`;
     report += `Đáp án và câu hỏi:\n\n`;
 
     questions.forEach((question, index) => {

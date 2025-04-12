@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Divider from '@mui/material/Divider';
+import Chip from '@mui/material/Chip'
 import { useAuth } from '../contexts/AuthContext';
 import { keyframes } from '@mui/system';
 import {
@@ -12,15 +14,21 @@ import {
   CardContent,
   Paper,
   IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
+  Stack,
   Tooltip,
   CircularProgress,
   Alert,
+  Snackbar,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
 import {
@@ -31,6 +39,13 @@ import {
   People as PeopleIcon,
   AutoStories as AutoStoriesIcon,
   ArrowUpward as ArrowUpwardIcon,
+  TrendingUp as TrendingUpIcon,
+  Schedule as ScheduleIcon,
+  BarChart as BarChartIcon,
+  StarBorder as StarBorderIcon,
+  History as HistoryIcon,
+  Star as StarIcon,
+  EmojiEvents as TrophyIcon
 } from '@mui/icons-material';
 import educationImage from '../images/photo3.jpg';
 
@@ -58,6 +73,8 @@ const gradientBg = keyframes`
   100% { background-position: 0% 50%; }
 `;
 
+
+
 function Introduction() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,6 +83,433 @@ function Introduction() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
   const [message, setMessage] = useState('');
+  const [statisticsError, setStatisticsError] = useState(null);
+  const [statisticsLoading, setStatisticsLoading] = useState(false);
+  const [subjectsMap, setSubjectsMap] = useState({});
+  
+
+  const [openStatsDialog, setOpenStatsDialog] = useState(false);
+  const [openSubjectStats, setOpenSubjectStats] = useState(false);
+  const [statistics, setStatistics] = useState({
+    totalTests: 0,
+    averageScore: 0,
+    averageTime: 0,
+    subjectStats: {}
+  });
+
+  const [openRankingBoard, setOpenRankingBoard] = useState(false);
+  const [rankings, setRankings] = useState([]);
+
+  const fetchRankings = async () => {
+    try {
+      const token = localStorage.getItem('token'); 
+      const response = await fetch('http://localhost:5000/api/users/rankings', {
+        headers: {
+          'Authorization': `Bearer ${token}`, 
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setRankings(data);
+    } catch (error) {
+      console.error("Could not fetch rankings:", error);
+      setError("Không thể tải bảng xếp hạng. Vui lòng thử lại sau.");
+    }
+  };
+
+  const formatScore = (score) => {
+    return score % 1 === 0 ? Math.floor(score) : score.toFixed(2);
+  };
+  
+  const formatAverageTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}'${remainingSeconds.toString().padStart(2, '0')}s`;
+  };
+
+  const fetchUserStatistics = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch('http://localhost:5000/api/users/test-history', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      const testHistory = await response.json();
+      console.log('Test History:', testHistory);
+      
+      const totalTests = testHistory.length;
+      
+      const totalScore = testHistory.reduce((acc, test) => {
+        const correctAnswers = test.questionSet.filter(q => q.userAnswer === q.correctAnswer).length;
+        return acc + (correctAnswers * 0.25);
+      }, 0);
+      const averageScore = totalTests > 0 ? totalScore / totalTests : 0;
+  
+      const totalTime = testHistory.reduce((acc, test) => acc + test.timeSpent, 0);
+      const averageTime = totalTests > 0 ? Math.round(totalTime / totalTests) : 0;
+
+      const subjectStats = {};
+      testHistory.forEach(test => {
+        if (!test.subjectId || !test.subjectId.name) {
+          console.warn('Test missing subject data:', test);
+          return;
+        }
+        
+        const subjectId = test.subjectId._id;
+        const subjectName = test.subjectId.name; 
+        
+        if (!subjectStats[subjectId]) {
+          subjectStats[subjectId] = {
+            name: subjectName,
+            totalTests: 0,
+            totalScore: 0,
+            totalTime: 0,
+            bestScore: 0,
+            recentScores: []
+          };
+        }
+        
+        const correctAnswers = test.questionSet.filter(q => q.userAnswer === q.correctAnswer).length;
+        const score = correctAnswers * 0.25;
+        
+        subjectStats[subjectId].totalTests++;
+        subjectStats[subjectId].totalScore += score;
+        subjectStats[subjectId].totalTime += test.timeSpent;
+        subjectStats[subjectId].bestScore = Math.max(subjectStats[subjectId].bestScore, score);
+        subjectStats[subjectId].recentScores.push({
+          score,
+          date: test.date || test.completedAt 
+        });
+      });
+  
+      Object.keys(subjectStats).forEach(subjectId => {
+        const stats = subjectStats[subjectId];
+        stats.averageScore = stats.totalScore / stats.totalTests;
+        stats.averageTime = Math.round(stats.totalTime / stats.totalTests);
+        stats.recentScores = stats.recentScores
+          .sort((a, b) => new Date(b.date) - new Date(a.date))
+          .slice(0, 5);
+      });
+  
+      setStatistics({
+        totalTests,
+        averageScore,
+        averageTime,
+        subjectStats
+      });
+    } catch (error) {
+      console.error("Could not fetch test history:", error);
+      setStatisticsError("Không thể tải dữ liệu thống kê. Vui lòng thử lại sau.");
+    }
+  };
+
+  const StatisticsDialog = () => (
+    <Dialog
+      open={openStatsDialog}
+      onClose={() => setOpenStatsDialog(false)}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 2,
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        fontFamily: "Roboto Slab", 
+        borderBottom: 1, 
+        borderColor: 'divider',
+        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1
+      }}>
+        <StarBorderIcon /> Thống kê học tập
+        
+      </DialogTitle>
+      <DialogContent>
+        <Box sx={{ p: 2 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: "Roboto Slab" }}>Thông tin</TableCell>
+                      <TableCell align="center" sx={{ fontWeight: 'bold', fontFamily: "Roboto Slab" }}>Giá trị</TableCell>
+                      <TableCell sx={{ fontWeight: 'bold', fontFamily: "Roboto Slab" }}>Mô tả</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    <TableRow>
+                      <TableCell>
+                        <Box display="flex" alignItems="center">
+                          <AssessmentIcon sx={{ mr: 1, color: 'primary.main' }} />
+                          Bài đã làm
+                        </Box>
+                      </TableCell>
+                      <TableCell align="center">{statistics.totalTests} bài</TableCell>
+                      <TableCell>Tổng số bài kiểm tra đã làm.</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <Box display="flex" alignItems="center">
+                          <TrendingUpIcon sx={{ mr: 1, color: 'primary.main' }} />
+                          Điểm TB
+                        </Box>
+                      </TableCell>
+                      <TableCell align="center">
+                        {formatScore(statistics.averageScore)}
+                      </TableCell>
+                      <TableCell>Điểm trung bình các bài kiểm tra.</TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell>
+                        <Box display="flex" alignItems="center">
+                          <ScheduleIcon sx={{ mr: 1, color: 'primary.main' }} />
+                          Thời gian TB
+                        </Box>
+                      </TableCell>
+                      <TableCell align="center">{formatAverageTime(statistics.averageTime)}</TableCell>
+                      <TableCell>Thời gian trung bình các bài kiểm tra.</TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
+          </Grid>
+        </Box>
+      </DialogContent>
+      <DialogActions 
+        sx={{ 
+        p: 3, 
+        borderTop: 1, 
+        borderColor: 'divider',
+        display: 'flex',
+        justifyContent: 'space-between' 
+      }}
+    >
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <Button
+          variant="contained"
+          component={Link}
+          to="/test-history"
+          startIcon={<HistoryIcon />}
+          sx={{
+            background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+            color: 'white',
+          }}
+        >
+          Xem lịch sử kiểm tra
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => {
+            setOpenStatsDialog(false);
+            setOpenSubjectStats(true);
+          }}
+          startIcon={<BarChartIcon />}
+          sx={{
+            background: 'linear-gradient(45deg, #9C27B0 30%, #E040FB 90%)',
+            color: 'white',
+          }}
+        >
+          Thống kê theo môn
+        </Button>
+      </Box>
+
+      <Button
+        variant="outlined"
+        onClick={() => setOpenStatsDialog(false)}
+      >
+        Đóng
+      </Button>
+    </DialogActions>
+    </Dialog>
+  );
+
+  const SubjectStatisticsDialog = () => (
+    <Dialog
+      open={openSubjectStats}
+      onClose={() => setOpenSubjectStats(false)}
+      maxWidth="lg"
+      fullWidth
+      PaperProps={{
+        sx: {
+          borderRadius: 2,
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+        }
+      }}
+    >
+      <DialogTitle sx={{ 
+        fontFamily: "Roboto Slab", 
+        borderBottom: 1, 
+        borderColor: 'divider',
+        background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+        color: 'white',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1
+      }}>
+        <StarBorderIcon />Thống kê theo môn học
+        
+      </DialogTitle>
+      <DialogContent>
+        <Box sx={{ p: 2 }}>
+          <Grid container spacing={3}>
+            {Object.entries(statistics.subjectStats || {}).map(([subjectId, stats]) => (
+              <Grid item xs={12} key={subjectId}>
+                <Card sx={{ mb: 2 }}>
+                  <CardContent>
+                    <Typography variant="h6" gutterBottom fontFamily="Roboto Slab">
+                      {stats.name} - THCS
+                    </Typography>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} md={4}>
+                        <Box sx={{ p: 2, textAlign: 'center' }}>
+                          <Typography variant="body2" color="textSecondary">Số bài đã làm</Typography>
+                          <Typography variant="h4" color="primary">{stats.totalTests}</Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} md={4}>
+                        <Box sx={{ p: 2, textAlign: 'center' }}>
+                          <Typography variant="body2" color="textSecondary">Điểm trung bình</Typography>
+                          <Typography variant="h4" color="primary">{formatScore(stats.averageScore)}</Typography>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} md={4}>
+                        <Box sx={{ p: 2, textAlign: 'center' }}>
+                          <Typography variant="body2" color="textSecondary">Thời gian trung bình</Typography>
+                          <Typography variant="h4" color="primary">{formatAverageTime(stats.averageTime)}</Typography>
+                        </Box>
+                      </Grid>
+                    </Grid>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography variant="subtitle2" color="textSecondary" gutterBottom>
+                      5 điểm gần nhất:
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                      {stats.recentScores.map((score, index) => (
+                        <Chip
+                          key={index}
+                          label={`${formatScore(score.score)} (${new Date(score.date).toLocaleDateString()})`}
+                          color="primary"
+                          variant="outlined"
+                          size="small"
+                        />
+                      ))}
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </DialogContent>
+      <DialogActions sx={{ p: 3, borderTop: 1, borderColor: 'divider' }}>
+        <Button
+          variant="outlined"
+          onClick={() => setOpenSubjectStats(false)}
+          sx={{ mr: 1 }}
+        >
+          Đóng
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+  
+  const RankingBoardDialog = ({ open, onClose, rankings }) => {
+    return (
+      <Dialog
+        open={open}
+        onClose={onClose}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: 2,
+            background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+          }
+        }}
+      >
+        <DialogTitle sx={{ 
+          fontFamily: "Roboto Slab", 
+          borderBottom: 1, 
+          borderColor: 'divider',
+          background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+          color: 'white',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1
+        }}>
+          <TrophyIcon /> Bảng xếp hạng cộng đồng
+        </DialogTitle>
+        <DialogContent>
+          <TableContainer component={Paper} sx={{ mt: 2 }}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold', width: '15%' }}>Thứ hạng</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', width: '30%' }}>Tên</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', width: '30%' }} align="center">Điểm trung bình</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', width: '25%' }} align="center">Số bài đã làm</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {rankings.map((user, index) => (
+                  <TableRow 
+                    key={user._id}
+                    sx={{
+                      backgroundColor: index < 3 ? 'rgba(255, 246, 196, 0.43)' : 'inherit',
+                      '&:hover': {
+                        backgroundColor: 'rgba(100, 175, 237, 0.1)',
+                      }
+                    }}
+                  >
+                    <TableCell>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {index < 3 ? (
+                          <StarIcon sx={{ 
+                            color: index === 0 ? 'gold' : index === 1 ? 'silver' : '#CD7F32'
+                          }} />
+                        ) : null}
+                        #{index + 1}
+                      </Box>
+                    </TableCell>
+                    <TableCell>{user.username}</TableCell>
+                    <TableCell align="center">{user.averageScore.toFixed(2)}</TableCell>
+                    <TableCell align="center">{user.totalTests}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </DialogContent>
+        <DialogActions sx={{ p: 3, borderTop: 1, borderColor: 'divider' }}>
+          <Button 
+            variant="outlined"
+            onClick={onClose}
+            sx={{ mr: 1 }}
+          >
+            Đóng
+          </Button>
+        </DialogActions>
+
+      </Dialog>
+    );
+  };
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -96,16 +540,30 @@ function Introduction() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleProgressClick = () => {
+  const handleProgressClick = async () => { 
     if (!isAuthenticated) {
       setMessage("Hãy đăng nhập trước...");
       setTimeout(() => {
-        navigate('/login?redirect=/test-history');
+        navigate('/login?redirect=/');
       }, 2000);
       return;
-    } else {
-      navigate('/test-history');
     }
+    
+    await fetchUserStatistics(); 
+    setOpenStatsDialog(true);
+  };
+
+  const handlerankClick = async () => { 
+    if (!isAuthenticated) {
+      setMessage("Hãy đăng nhập trước...");
+      setTimeout(() => {
+        navigate('/login?redirect=/');
+      }, 2000);
+      return;
+    }
+    
+    await fetchRankings();
+    setOpenRankingBoard(true);
   };
 
   const features = [
@@ -124,7 +582,7 @@ function Introduction() {
     {
       icon: <PeopleIcon fontSize="large" />,
       title: "Cộng đồng",
-      onClick: () => {}
+      onClick: handlerankClick 
     }
   ];
 
@@ -431,8 +889,23 @@ function Introduction() {
           <ArrowUpwardIcon />
         </IconButton>
       )}
+      <StatisticsDialog 
+        open={openStatsDialog}
+        onClose={() => setOpenStatsDialog(false)}
+        statistics={statistics}
+        formatScore={formatScore}
+        formatAverageTime={formatAverageTime}
+        onOpenSubjectStats={() => setOpenSubjectStats(true)}
+      />
+      <SubjectStatisticsDialog />
+      <RankingBoardDialog 
+        open={openRankingBoard}
+        onClose={() => setOpenRankingBoard(false)}
+        rankings={rankings}
+      />
     </Box>
   );
 }
+
 
 export default Introduction;

@@ -99,14 +99,16 @@ function Results() {
     
 
     const getScoreColor = (score, total) => {
-        const percentage = (score / totalQuestions) * 100;
+        const maxScore = total * 0.25;
+        const percentage = (score / maxScore) * 100;
         if (percentage >= 80) return 'success.main';
         if (percentage >= 60) return 'warning.main';
         return 'error.main';
     };
 
     const getScoreMessage = (score, total) => {
-        const percentage = (score / totalQuestions) * 100;
+        const maxScore = total * 0.25;
+        const percentage = (score / maxScore) * 100;
         if (percentage >= 80) return 'Hoàn hảo!';
         if (percentage >= 60) return 'Tốt!';
         return 'Hãy luyện tập thêm!';
@@ -118,7 +120,9 @@ function Results() {
         return !isNaN(correctAnswer) && !isNaN(userAnswer) && correctAnswer === userAnswer;
     };
     
-    
+    const formatScore = (score) => {
+        return score % 1 === 0 ? Math.floor(score) : score.toFixed(2);
+    };
     
     return (
         <Container maxWidth="lg">
@@ -161,10 +165,10 @@ function Results() {
                                 <Box sx={{ position: 'relative', display: 'inline-flex', mb: 2 }}>
                                     <CircularProgress
                                         variant="determinate"
-                                        value={(score / totalQuestions) * 100}
+                                        value={(score / 0.25 / totalQuestions) * 100}
                                         size={120}
                                         thickness={4}
-                                        sx={{ color: getScoreColor(score, totalQuestions) }}
+                                        sx={{ color: getScoreColor(score / 0.25, totalQuestions) }}
                                     />
                                     <Box
                                         sx={{
@@ -179,15 +183,15 @@ function Results() {
                                         }}
                                     >
                                         <Typography variant="h4" component="div" color="text.secondary">
-                                            {Math.round((score / totalQuestions) * 100)}%
+                                            {Math.round((score / 0.25 / totalQuestions) * 100)}%
                                         </Typography>
                                     </Box>
                                 </Box>
                                 <Typography variant="h6" gutterBottom>
-                                    {getScoreMessage(score, totalQuestions)}
+                                    {getScoreMessage(score / 0.25, totalQuestions)}
                                 </Typography>
-                                <Typography color="text.secondary">
-                                    Số câu đúng: {score} / {totalQuestions}
+                                <Typography color="text.secondary" fontWeight="bold">
+                                    Điểm: {formatScore(score)}
                                 </Typography>
                             </CardContent>
                         </Card>

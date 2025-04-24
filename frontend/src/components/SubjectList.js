@@ -44,6 +44,7 @@ function SubjectList() {
   const [className, setClassName] = useState('');
   const [questionSets, setQuestionSets] = useState([]);
   const classId = searchParams.get('classId');
+  const subjectId = searchParams.get('subjectId');
   const { isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const [message, setMessage] = useState('');
@@ -57,41 +58,71 @@ function SubjectList() {
     if (!isAuthenticated) {
       setMessage("Hãy đăng nhập trước... ");
       setTimeout(() => {
-        navigate('/login?redirect=/subjects?classId=' + classId);
+        const redirectParams = new URLSearchParams();
+        if (classId) redirectParams.set('classId', classId);
+        if (subjectId) redirectParams.set('subjectId', subjectId);
+        navigate(`/login?redirect=/subjects?${redirectParams.toString()}`);
       }, 2000);
       return;
     }
 
     const fetchData = async () => {
-      if (!classId) {
-        setError("No class selected");
-        setLoading(false);
-        return;
-      }
-
       try {
         setLoading(true);
+        
+        if (!classId) {
+          navigate('/', { replace: true });
+          return;
+        }
+
         const classResponse = await fetch(`http://localhost:5000/api/classes/${classId}`);
-        if (!classResponse.ok) throw new Error('Failed to fetch class details');
-        const classData = await classResponse.ok ? await classResponse.json() : null;
-        setClassName(classData?.name || 'Unknown Class');
-
-        const subjectsResponse = await fetch(`http://localhost:5000/api/subjects/byClass/${classId}`);
-        if (!subjectsResponse.ok) throw new Error('Failed to fetch subjects');
-        const subjectsData = await subjectsResponse.json();
-        setSubjects(subjectsData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setError("Failed to load subjects. Please try again later.");
-      } finally {
-        setLoading(false);
+      if (!classResponse.ok) {
+        if (classResponse.status === 404) {
+          navigate('/', { replace: true });
+          return;
+        }
+        throw new Error('Failed to fetch class details');
       }
-    };
+      const classData = await classResponse.json();
+      setClassName(classData?.name || 'Unknown Class');
 
-    if (classId) {
-      fetchData();
+      const subjectsResponse = await fetch(`http://localhost:5000/api/subjects/byClass/${classId}`);
+      if (!subjectsResponse.ok) {
+        throw new Error('Failed to fetch subjects');
+      }
+      const subjectsData = await subjectsResponse.json();
+      setSubjects(subjectsData);
+
+      if (subjectId) {
+        const selectedSubject = subjectsData.find(s => s._id === subjectId);
+        if (selectedSubject) {
+          setSelectedSubject(selectedSubject);
+          setDialogOpen(true);
+        }
+      }
+
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setError("Failed to load data. Please try again later.");
+    } finally {
+      setLoading(false);
     }
-  }, [classId, isAuthenticated, navigate]);
+  };
+
+  fetchData();
+}, [classId, subjectId, isAuthenticated, navigate]);
+
+  if (!classId) {
+    return (
+      <Container maxWidth="md">
+        <Box mt={8}>
+          <Alert severity="info">
+            Vui lòng chọn lớp trước...
+          </Alert>
+        </Box>
+      </Container>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -127,6 +158,10 @@ function SubjectList() {
     try {
       setLoading(true);
       setError(null);
+
+      const newSearchParams = new URLSearchParams(searchParams);
+      newSearchParams.set('subjectId', subjectId);
+      navigate(`/subjects?${newSearchParams.toString()}`);
 
       const token = localStorage.getItem('token');
       if (!token) {

@@ -488,7 +488,7 @@ function Introduction() {
                         #{index + 1}
                       </Box>
                     </TableCell>
-                    <TableCell>{user.username}</TableCell>
+                    <TableCell>{user.displayName}</TableCell>
                     <TableCell align="center">{user.averageScore.toFixed(2)}</TableCell>
                     <TableCell align="center">{user.totalTests}</TableCell>
                   </TableRow>

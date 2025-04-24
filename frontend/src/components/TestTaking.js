@@ -563,7 +563,7 @@ function TestTaking() {
                 <Grid container spacing={1}>
                   {questions.map((_, index) => (
                     <Grid item key={index}>
-                      <Tooltip title={`Question ${index + 1}`}>
+                      <Tooltip title={`Câu ${index + 1}`}>
                         <Button
                           variant={currentQuestionIndex === index ? "contained" : "outlined"}
                           color={selectedAnswers.hasOwnProperty(index) ? "success" : "primary"}

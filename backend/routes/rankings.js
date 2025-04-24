@@ -58,6 +58,7 @@ router.get('/', async (req, res) => {
         $project: {
           _id: '$userDetails._id',
           username: '$userDetails.username',
+          displayName: '$userDetails.displayName',
           averageScore: 1,
           totalTests: 1
         }

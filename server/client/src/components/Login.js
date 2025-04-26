@@ -15,6 +15,7 @@ function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const API = process.env.REACT_APP_API_URL;
 
   const redirect = searchParams.get('redirect') || '/';
 

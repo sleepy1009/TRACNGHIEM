@@ -10,6 +10,7 @@ function Register() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState(''); 
   const navigate = useNavigate();
+  const API = process.env.REACT_APP_API_URL;
 
   const handleRegister = async () => {
     setError(''); 

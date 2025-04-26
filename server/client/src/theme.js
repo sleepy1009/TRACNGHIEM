@@ -26,13 +26,13 @@ const theme = createTheme({
     },
   },
   components: {
-    MuiCard: {
+    MuiContainer: {
       styleOverrides: {
         root: {
-          borderRadius: 12,
-          transition: '0.3s',
-          '&:hover': {
-            boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+          padding: {
+            xs: 1,
+            sm: 2,
+            md: 3,
           },
         },
       },
@@ -40,9 +40,19 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
-          textTransform: 'none',
-          fontWeight: 600,
+          '@media (max-width:600px)': {
+            fontSize: '0.875rem',
+            padding: '6px 16px',
+          },
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          '@media (max-width:600px)': {
+            padding: '8px',
+          },
         },
       },
     },

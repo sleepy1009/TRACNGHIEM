@@ -23,11 +23,13 @@ function Header() {
 
   // Button hover animation styles
   const buttonStyle = {
-    mr: 1,
+    mr: { xs: 0.5, sm: 1 }, 
     fontFamily: "Roboto Slab",
     position: 'relative',
     overflow: 'hidden',
     transition: 'all 0.3s ease',
+    fontSize: { xs: '0.8rem', sm: '0.875rem' }, 
+    padding: { xs: '6px 12px', sm: '8px 16px' }, 
     '&::before': {
       content: '""',
       position: 'absolute',
@@ -86,9 +88,9 @@ function Header() {
               variant="h6" 
               sx={{ 
                 flexGrow: 1, 
-                ml: 2, 
+                ml: { xs: 1, sm: 2 }, 
                 fontFamily: "Roboto Slab",
-                fontSize: '1.2rem',
+                fontSize: { xs: '1rem', sm: '1.2rem' }, 
                 fontWeight: 600,
                 background: 'linear-gradient(45deg, #FFFFFF 30%, #E3F2FD 90%)',
                 backgroundClip: 'text',

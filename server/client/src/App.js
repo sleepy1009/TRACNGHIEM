@@ -21,6 +21,8 @@ import './styles/mui-overrides.css';
 import './styles/main.css';
 import './styles/test.css';
 import './App.css';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
 
 function App() {
   const { isAuthenticated } = useAuth();
@@ -30,6 +32,7 @@ function App() {
   const shouldShowFooter = !hideFooterRoutes.includes(location.pathname);
 
   return (
+    <ThemeProvider theme={theme}>
     <Box sx={{ 
       display: 'flex', 
       flexDirection: 'column', 
@@ -61,6 +64,7 @@ function App() {
       </Box>
       {shouldShowFooter && <Footer />}
     </Box>
+    </ThemeProvider>
   );
 }
 

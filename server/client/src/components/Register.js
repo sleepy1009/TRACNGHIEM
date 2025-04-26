@@ -10,7 +10,6 @@ function Register() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState(''); 
   const navigate = useNavigate();
-  const API = process.env.REACT_APP_API_URL;
 
   const handleRegister = async () => {
     setError(''); 
@@ -57,7 +56,7 @@ function Register() {
     }
 
     try {
-      const response = await fetch(`${API}/api/users/register`, {
+      const response = await fetch('http://localhost:5000/api/users/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -166,6 +165,8 @@ function Register() {
         minHeight: '100vh',
         width: '100%',
         display: 'flex',
+        justifyContent: 'center', 
+        alignItems: 'center',
         position: 'relative',
         '&::before': {
           content: '""',
@@ -188,21 +189,20 @@ function Register() {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
-          padding: 0,
+          justifyContent: 'colume',
+          padding: { xs: '0 16px 32px', sm: '0 24px 32px' },
           backgroundColor: 'white',
           backdropFilter: 'blur(10px)',
-          opacity:0.9,
+          opacity: 0.9,
           minHeight: '10vh',
-          width: '40%',
-          mt: 12,
-          mb: 4,
+          width: { xs: '90%', sm: '70%', md: '450px' }, 
+          mt: { xs: 8, sm: 8, md: 10 },
+          mb: { xs: 4, md: 0 },
           borderRadius: '25px',
           position: 'relative',
-          paddingTop: '125px',
-          paddingBottom: '20px',
+          paddingTop: { xs: '80px', sm: '90px' },
 
-          overflow: 'hidden', // Ensure the pseudo-element doesn't overflow
+          overflow: 'hidden', 
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -241,13 +241,15 @@ function Register() {
         <Box
           sx={{
             position: 'absolute',
-            top: +30,
+            top: { xs: 15, sm: 25 },
             left: '50%',
+            transform: 'translateX(-50%)',
             backgroundColor: '#f6fafd',
-            padding: '15px 40px',
+            padding: { xs: '10px 25px', sm: '15px 40px' },
             borderRadius: '50px',
             boxShadow: '0 10px 20px rgba(180, 200, 211, 0.48)',
             animation: 'float 3s ease-in-out infinite',
+            zIndex: 2,
             '&::before': {
               content: '""',
               position: 'absolute',
@@ -324,12 +326,13 @@ function Register() {
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
-            px: 3, // Add padding to the sides
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           {error && <Alert severity="error" sx={{ mb: 2, width: '100%', borderRadius: '8px' }}>{error}</Alert>}
 
-          <Box component="form" sx={{ width: '100%' }}>
+          <Box component="form" sx={{ width: '100%',alignItems: 'center' }}>
             <TextField
               variant="outlined"
               margin="normal"
@@ -342,6 +345,7 @@ function Register() {
               autoFocus
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              sx={{mb: 1 ,width: '90%', ml:2.5}}
             />
             <TextField
               variant="outlined"
@@ -354,6 +358,7 @@ function Register() {
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              sx={{ mt: 1, mb: 1 ,width: '90%', ml:2.5}}
             />
             <TextField
               variant="outlined"
@@ -367,6 +372,7 @@ function Register() {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              sx={{ mt: 1, mb: 2 ,width: '90%', ml:2.5}}
             />
             <TextField
               variant="outlined"
@@ -380,6 +386,7 @@ function Register() {
               autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              sx={{ mt: 1, mb: 1 ,width: '90%', ml:2.5}}
             />
             <Button
               type="button"
@@ -390,25 +397,27 @@ function Register() {
                 mt: 3,
                 mb: 2,
                 fontFamily: "Roboto Slab",
-                width: '40%',
-                height: '35px',
+                width: 'auto',
+                minWidth: '120px',
+                height: '40px',
                 borderRadius: '50px !important',
-                margin: '12px auto',
+                margin: '16px auto',
                 display: 'block',
                 minWidth: '56px',
-                padding: '0',
+                padding: '0 24px',
               }}
               onClick={handleRegister}
             >
               Đăng ký
             </Button>
 
-            <Box textAlign="center" sx={{ mt: 2 }}>
+            <Box textAlign="center" sx={{ mb: 0 }}>
               <MuiLink 
                 component={Link} 
                 to="/login" 
                 variant="body2"
                 sx={{
+                  display: 'block',
                   textDecoration: 'none',
                   '&:hover': {
                     textDecoration: 'underline'

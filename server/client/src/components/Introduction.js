@@ -86,7 +86,6 @@ function Introduction() {
   const [statisticsError, setStatisticsError] = useState(null);
   const [statisticsLoading, setStatisticsLoading] = useState(false);
   const [subjectsMap, setSubjectsMap] = useState({});
-  const API = process.env.REACT_APP_API_URL;
   
 
   const [openStatsDialog, setOpenStatsDialog] = useState(false);
@@ -104,7 +103,7 @@ function Introduction() {
   const fetchRankings = async () => {
     try {
       const token = localStorage.getItem('token'); 
-      const response = await fetch(`${API}/api/users/rankings`, {
+      const response = await fetch('http://localhost:5000/api/users/rankings', {
         headers: {
           'Authorization': `Bearer ${token}`, 
         },
@@ -134,7 +133,7 @@ function Introduction() {
   const fetchUserStatistics = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch(`${API}/api/users/test-history`, {
+      const response = await fetch('http://localhost:5000/api/users/test-history', {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -223,6 +222,14 @@ function Introduction() {
         sx: {
           borderRadius: 2,
           background: 'linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)',
+          width: { xs: '95%', sm: '80%', md: '70%' }, 
+          margin: { xs: '10px', md: '32px' },  
+          '& .MuiDialogTitle-root': {
+            padding: { xs: 2, md: 3 }
+          },
+          '& .MuiDialogContent-root': {
+            padding: { xs: 1, md: 2 }
+          }
         }
       }}
     >
@@ -294,11 +301,15 @@ function Introduction() {
       </DialogContent>
       <DialogActions 
         sx={{ 
-        p: 3, 
+        p: { xs: 1, md: 3 },
         borderTop: 1, 
         borderColor: 'divider',
         display: 'flex',
-        justifyContent: 'space-between' 
+        flexDirection: { xs: 'column', sm: 'row' },  
+        gap: { xs: 1, sm: 2 },
+        '& .MuiButton-root': {
+          width: { xs: '100%', sm: 'auto' } 
+        }
       }}
     >
       <Box sx={{ display: 'flex', gap: 1 }}>
@@ -515,7 +526,7 @@ function Introduction() {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await fetch(`${API}/api/classes`);
+        const response = await fetch('http://localhost:5000/api/classes');
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -638,18 +649,23 @@ function Introduction() {
       >
         <Container maxWidth="lg">
           <Grid container spacing={1} alignItems="center">
-            <Grid item xs={8} md={6}>
+            <Grid item xs={12} md={6}>
               <Typography
                 component="h1"
                 variant="h2"
                 color="inherit"
                 gutterBottom
                 sx={{
-                  fontSize: { xs: '2rem', md: '2.5rem' },
+                  fontSize: { 
+                    xs: '1.5rem',  
+                    sm: '2rem',    
+                    md: '2.5rem'   
+                  },
                   fontWeight: "bold",
                   fontFamily: "Roboto Slab",
                   animation: `${fadeIn} 1s ease-out`,
                   textShadow: '2px 2px 4px rgba(0,0,0,0.2)',
+                  py: { xs: 2, md: 0 }
                 }}
               >
                 Chào mừng bạn đến với Hành trình học tập.
@@ -680,22 +696,27 @@ function Introduction() {
                 }}
                 sx={{ 
                   mt: 2,
-                  fontSize:20,
-                  fontWeight:"bold",
-                  fontFamily:"Roboto Slab"
+                  fontSize: { xs: 16, md: 20 },
+                  fontWeight: "bold",
+                  fontFamily: "Roboto Slab",
+                  width: { xs: '100%', sm: 'auto' }
                 }}
               >
                 Bắt đầu
               </Button>
             </Grid>
 
-            <Grid item xs={12} md={6} sx={{ display: { xs: 'none', md: 'block' } }}>
+            <Grid item xs={12} md={6} sx={{ display: { xs: 'block', sm: 'block', md: 'block'  }, mt: { xs: 4, md: 0 } }}>
               <Box
                 component="img"
                 src={educationImage}
                 alt="Education illustration"
                 sx={{
-                  width: '60%',
+                  width: { 
+                    xs: '80%',    
+                    sm: '70%',    
+                    md: '60%'     
+                  },
                   maxWidth: '500px',
                   height: 'auto',
                   display: 'block',
@@ -727,12 +748,12 @@ function Introduction() {
         >
           Tổng quan
         </Typography>
-        <Grid container spacing={4}>
+        <Grid container spacing={2}>
           {features.map((feature, index) => (
-            <Grid item xs={12} md={4} key={index}>
+            <Grid item xs={12} sm={6} md={4} key={index}>
               <Card
                 sx={{
-                  height: '100%',
+                  height: 'auto',
                   minHeight: '100px', 
                   maxHeight: '130px',
                   display: 'flex',
@@ -751,7 +772,7 @@ function Introduction() {
                 }}
                 onClick={feature.onClick}
               >
-                <CardContent sx={{ flexGrow: 1, textAlign: 'center' }}>
+                <CardContent sx={{ flexGrow: 1, textAlign: 'center',p: { xs: 1, md: 2 } }}>
                   <Box 
                     className="icon"
                     sx={{ 
@@ -811,13 +832,22 @@ function Introduction() {
             sx={{ 
               boxShadow: 3,
               animation: `${fadeIn} 1s ease-out`,
+              overflowX: 'auto',
               '& .MuiTableRow-root': {
                 transition: 'all 0.3s ease',
               },
               '& .MuiTableRow-root:hover': {
                 backgroundColor: 'rgba(114, 161, 237, 0.32)',
                 transform: 'scale(1.01)',
+              
+              },
+              '& .MuiTableCell-root': {
+              padding: { xs: 1, md: 2 }, 
+              fontSize: { 
+                xs: '0.875rem', 
+                md: '1rem'       
               }
+            }
             }}
           >
             <Table>

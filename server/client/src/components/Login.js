@@ -15,7 +15,6 @@ function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
-  const API = process.env.REACT_APP_API_URL;
 
   const redirect = searchParams.get('redirect') || '/';
 
@@ -83,7 +82,7 @@ function Login() {
 
 
     try {
-      const response = await fetch(`${API}/api/users/login`, {
+      const response = await fetch('http://localhost:5000/api/users/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -94,7 +93,7 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        const fetchUserResponse = await fetch(`${API}/api/users/me`, {
+        const fetchUserResponse = await fetch('http://localhost:5000/api/users/me', {
             headers: {
                 'Authorization': `Bearer ${data.token}`, 
             },
@@ -135,7 +134,7 @@ function Login() {
 
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
-        const response = await fetch(`${API}/api/auth/google`, { 
+        const response = await fetch('http://localhost:5000/api/auth/google', { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -145,7 +144,7 @@ function Login() {
 
         const data = await response.json();
         if (response.ok) {
-            const fetchUserResponse = await fetch(`${API}/api/users/me`, {
+            const fetchUserResponse = await fetch('http://localhost:5000/api/users/me', {
             headers: {
                 'Authorization': `Bearer ${data.token}`,
             },
@@ -244,6 +243,8 @@ function Login() {
         minHeight: '100vh',
         width: '100%',
         display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         position: 'relative',
         '&::before': {
           content: '""',
@@ -266,20 +267,20 @@ function Login() {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
-          padding: 0,
+          justifyContent: 'colume',
+          padding: { xs: '0 16px 32px', sm: '0 24px 32px' }, 
           backgroundColor: 'white',
           backdropFilter: 'blur(10px)',
-          opacity:0.9,
+          opacity: 0.9,
           minHeight: '10vh',
-          width: '40%', 
-          mt: 14, 
-          mb: 4,
-          borderRadius: '25px', 
+          width: { xs: '90%', sm: '70%', md: '450px' },
+          mt: { xs: 8, sm: 8, md: 10 }, 
+          mb: { xs: 4, md: 0 },
+          borderRadius: '25px',
           position: 'relative',
-          paddingTop: '60px',
-
-          overflow: 'hidden', // Ensure the pseudo-element doesn't overflow
+          paddingTop: { xs: '80px', sm: '90px' } ,
+          
+          overflow: 'hidden', 
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -317,13 +318,15 @@ function Login() {
         <Box
           sx={{
             position: 'absolute',
-            top: +30,
+            top: { xs: 15, sm: 25 },
             left: '50%',
+            transform: 'translateX(-50%)',
             backgroundColor: '		#f6fafd',
-            padding: '15px 40px',
+            padding: { xs: '10px 25px', sm: '15px 40px' },
             borderRadius: '50px',
             boxShadow: '0 10px 20px rgba(180, 200, 211, 0.48)',
             animation: 'float 3s ease-in-out infinite',
+            zIndex: 2,
             '&::before': {
               content: '""',
               position: 'absolute',
@@ -401,13 +404,14 @@ function Login() {
             flexDirection: 'column',
             alignItems: 'center',
             width: '100%',
-            px: 3, // Add padding to the sides
+            position: 'relative', 
+            zIndex: 1,
           }}
         >
           {error && <Alert severity="error" sx={{ mb: 2, width: '100%' }}>{error}</Alert>} 
           {successMessage && <Alert severity="success" sx={{ mb: 2, width: '100%' }}>{successMessage}</Alert>}
           
-          <Box component="form" sx={{ width: '100%' }}>
+          <Box component="form" sx={{ width: '100%', mt: 1 }}>
             <TextField
               variant="outlined"
               margin="normal"
@@ -420,6 +424,7 @@ function Login() {
               autoFocus
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              sx={{ mb: 1,width: '90%', ml:2.5 }}
             />
             <TextField
               variant="outlined"
@@ -433,30 +438,39 @@ function Login() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              sx={{ mt: 1, mb: 2 ,width: '90%', ml:2.5}}
             />
             <Button
               type="button"
-              fullWidth
+              
               variant="contained"
               color="primary"
               sx={{ 
                 mt: 3, 
                 mb: 2,
                 fontFamily: "Roboto Slab",
-                width: '40%',
-                height: '35px',
+                width: 'auto', 
+                minWidth: '120px', 
+                height: '40px',
                 borderRadius: '50px !important',
-                margin: '12px auto',
-                display: 'block',
-                minWidth: '56px',
-                padding: '0',
+                margin: '16px auto', 
+                display: 'block', 
+                padding: '0 24px',
               }}
               onClick={handleLogin}
             >
               Đăng nhập 
             </Button>
 
-            <Box sx={{ width: 250, overflow: "hidden", mx: "auto" }}>
+            <Box sx={{ 
+              display: 'flex', 
+              
+              justifyContent: 'center', 
+              width: '100%', 
+              mt: 1,
+              mb: 3,
+              
+            }}>
               <GoogleLogin
                 onSuccess={handleGoogleLoginSuccess}
                 onError={() => {
@@ -466,17 +480,17 @@ function Login() {
                 shape="circle"
                 theme="snow" 
                 size="large" 
-                width="250"
+                width="250" 
                 useOneTap 
               />
             </Box>
 
-            <Box textAlign="center" sx={{ mb:-5 }}>
-              <MuiLink component={Link} to="" variant="body2">
+            <Box textAlign="center" sx={{ mb:0}}>
+              <MuiLink component={Link} to="" variant="body2" x={{ display: 'block', mb: 1 }}>
                 Quên mật khẩu?
               </MuiLink>
               <p></p>
-              <MuiLink component={Link} to="/register" variant="body2">
+              <MuiLink component={Link} to="/register" variant="body2" sx={{ display: 'block' }}>
                 Chưa có tài khoản? Đăng ký tại đây.
               </MuiLink>
             </Box>

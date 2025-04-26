@@ -56,7 +56,7 @@ function Register() {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/users/register', {
+      const response = await fetch(`${API}/api/users/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

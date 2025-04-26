@@ -86,6 +86,8 @@ function Introduction() {
   const [statisticsError, setStatisticsError] = useState(null);
   const [statisticsLoading, setStatisticsLoading] = useState(false);
   const [subjectsMap, setSubjectsMap] = useState({});
+  const API = process.env.REACT_APP_API_URL;
+
   
 
   const [openStatsDialog, setOpenStatsDialog] = useState(false);
@@ -103,7 +105,7 @@ function Introduction() {
   const fetchRankings = async () => {
     try {
       const token = localStorage.getItem('token'); 
-      const response = await fetch('http://localhost:5000/api/users/rankings', {
+      const response = await fetch(`${API}/api/users/rankings`, {
         headers: {
           'Authorization': `Bearer ${token}`, 
         },
@@ -133,7 +135,7 @@ function Introduction() {
   const fetchUserStatistics = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('http://localhost:5000/api/users/test-history', {
+      const response = await fetch(`${API}/api/users/test-history`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -526,7 +528,7 @@ function Introduction() {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/classes');
+        const response = await fetch(`${API}/api/classes`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

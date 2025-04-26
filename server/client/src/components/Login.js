@@ -82,7 +82,7 @@ function Login() {
 
 
     try {
-      const response = await fetch('http://localhost:5000/api/users/login', {
+      const response = await fetch(`${API}/api/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        const fetchUserResponse = await fetch('http://localhost:5000/api/users/me', {
+        const fetchUserResponse = await fetch(`${API}/api/users/me`, {
             headers: {
                 'Authorization': `Bearer ${data.token}`, 
             },
@@ -134,7 +134,7 @@ function Login() {
 
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
-        const response = await fetch('http://localhost:5000/api/auth/google', { 
+        const response = await fetch(`${API}/api/auth/google`, { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ function Login() {
 
         const data = await response.json();
         if (response.ok) {
-            const fetchUserResponse = await fetch('http://localhost:5000/api/users/me', {
+            const fetchUserResponse = await fetch(`${API}/api/users/me`, {
             headers: {
                 'Authorization': `Bearer ${data.token}`,
             },

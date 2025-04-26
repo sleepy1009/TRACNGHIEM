@@ -457,20 +457,16 @@ function Login() {
 
             <Box sx={{ 
               display: 'flex', 
-              marginLeft:-5,
-              marginRight:3,
+              
               justifyContent: 'center', 
               mt: 1,
               mb: 2,
+              width: 200, // set desired width
+              mx: "auto",
               '& > div': {
-                width: '30% !important',
-                '& > div, & > div > iframe': {
-                  width: '150% !important',
-                  scale: '1.1',
-                  transform: 'scale(1.2)', 
-                  borderRadius: '28px !important',
-                }
-              }
+                width: '100% !important',
+                minWidth: '100% !important'
+              },
             }}>
               <GoogleLogin
                 onSuccess={handleGoogleLoginSuccess}
@@ -479,8 +475,10 @@ function Login() {
                   setError('Google login failed.');
                 }}
                 shape="circle"
-                theme="snow" 
+                theme="snow"
+                 
                 size="small" 
+                width="200"
                 useOneTap 
               />
             </Box>

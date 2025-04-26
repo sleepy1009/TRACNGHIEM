@@ -30,6 +30,14 @@ app.use('/api/subjects', subjectRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/users/rankings', rankingsRouter);
 
+
+if (process.env.NODE_ENV === 'production') {
+  const clientBuildPath = path.join(__dirname, '../client/build');
+  app.use(express.static(clientBuildPath));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientBuildPath, 'index.html'));
+  });
+}
 // Error 
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -40,13 +48,7 @@ app.use((err, req, res, next) => {
 });
 
 
-if (process.env.NODE_ENV === 'production') {
-  const clientBuildPath = path.join(__dirname, '../client/build');
-  app.use(express.static(clientBuildPath));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(clientBuildPath, 'index.html'));
-  });
-}
+
 // Database connect
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,

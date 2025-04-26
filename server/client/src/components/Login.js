@@ -455,19 +455,7 @@ function Login() {
               Đăng nhập 
             </Button>
 
-            <Box sx={{ 
-              display: 'flex', 
-              
-              justifyContent: 'center', 
-              mt: 1,
-              mb: 2,
-              width: 200, // set desired width
-              mx: "auto",
-              '& > div': {
-                width: '100% !important',
-                minWidth: '100% !important'
-              },
-            }}>
+            <Box sx={{ width: 250, overflow: "hidden", mx: "auto" }}>
               <GoogleLogin
                 onSuccess={handleGoogleLoginSuccess}
                 onError={() => {
@@ -475,10 +463,9 @@ function Login() {
                   setError('Google login failed.');
                 }}
                 shape="circle"
-                theme="snow"
-                 
-                size="small" 
-                width="200"
+                theme="snow" 
+                size="large" 
+                width="250"
                 useOneTap 
               />
             </Box>

@@ -19,6 +19,7 @@ function TestDetail() {
   const [testResult, setTestResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const API = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     if (testResult?.questionSet) {
@@ -32,7 +33,7 @@ function TestDetail() {
       setError(null);
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:5000/api/users/test-history/${testId}`, {
+        const response = await fetch(`${API}/api/users/test-history/${testId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },

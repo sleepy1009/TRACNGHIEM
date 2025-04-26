@@ -8,6 +8,7 @@ function TestHistory() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { logout } = useAuth();
+  const API = process.env.REACT_APP_API_URL;
 
   const calculateNewScore = (test) => {
     const correctAnswers = test.questionSet.filter(q => q.userAnswer === q.correctAnswer).length;
@@ -27,7 +28,7 @@ function TestHistory() {
       setError(null);
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:5000/api/users/test-history', {
+        const response = await fetch('${API}/api/users/test-history', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },

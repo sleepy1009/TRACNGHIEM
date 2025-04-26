@@ -52,6 +52,7 @@ function SubjectList() {
   const [selectedSemester, setSelectedSemester] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const API = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -75,7 +76,7 @@ function SubjectList() {
           return;
         }
 
-        const classResponse = await fetch(`http://localhost:5000/api/classes/${classId}`);
+        const classResponse = await fetch(`${API}/api/classes/${classId}`);
       if (!classResponse.ok) {
         if (classResponse.status === 404) {
           navigate('/', { replace: true });
@@ -86,7 +87,7 @@ function SubjectList() {
       const classData = await classResponse.json();
       setClassName(classData?.name || 'Unknown Class');
 
-      const subjectsResponse = await fetch(`http://localhost:5000/api/subjects/byClass/${classId}`);
+      const subjectsResponse = await fetch(`${API}/api/subjects/byClass/${classId}`);
       if (!subjectsResponse.ok) {
         throw new Error('Failed to fetch subjects');
       }
@@ -171,7 +172,7 @@ function SubjectList() {
       console.log('Fetching questions for:', { subjectId, semester });
 
       const response = await fetch(
-        `http://localhost:5000/api/questions/bySubject/${subjectId}/${semester}`,
+        `${API}/api/questions/bySubject/${subjectId}/${semester}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,

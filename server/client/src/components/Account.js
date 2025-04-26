@@ -82,22 +82,24 @@ function Account() {
     const [isUploading, setIsUploading] = useState(false);
     const [openPreview, setOpenPreview] = useState(false);
     const [previewUrl, setPreviewUrl] = useState('');
+    const API = process.env.REACT_APP_API_URL;
 
     const handlePreview = () => {
         if (avatar || userData.avatarUrl) {
             const imageUrl = avatar || userData.avatarUrl;
             const fullUrl = imageUrl.startsWith('http') 
                 ? imageUrl 
-                : `http://localhost:5000${imageUrl}`;
+                : `${API}${imageUrl}`;
             setPreviewUrl(fullUrl);
             setOpenPreview(true);
         }
     };
+    
 
     const fetchUserData = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('http://localhost:5000/api/users/me', {
+            const response = await fetch('${API}/api/users/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -106,7 +108,7 @@ function Account() {
             if (response.ok) {
                 const data = await response.json();
                 if (data.avatarUrl) {
-                    data.avatarUrl = `http://localhost:5000${data.avatarUrl}`;
+                    data.avatarUrl = `${API}${data.avatarUrl}`;
                 }
                 setUserData(data);
                 setAvatar(data.avatarUrl);
@@ -135,7 +137,7 @@ function Account() {
     
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('http://localhost:5000/api/users/avatar', {
+                const response = await fetch('${API}/api/users/avatar', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -146,7 +148,7 @@ function Account() {
                 const data = await response.json();
     
                 if (response.ok) {
-                    const fullAvatarUrl = `http://localhost:5000${data.avatarUrl}`;
+                    const fullAvatarUrl = `${API}${data.avatarUrl}`;
                     setAvatar(fullAvatarUrl);
                     setUserData(prev => ({
                         ...prev,
@@ -175,7 +177,7 @@ function Account() {
       const fetchUserStatistics = async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch('http://localhost:5000/api/users/test-history', {
+            const response = await fetch('${API}/api/users/test-history', {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -220,7 +222,7 @@ function Account() {
                     return;
                 }
     
-                const userResponse = await fetch('http://localhost:5000/api/users/me', {
+                const userResponse = await fetch('${API}/api/users/me', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },
@@ -281,7 +283,7 @@ function Account() {
 
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch('http://localhost:5000/api/users/me', {
+            const response = await fetch('${API}/api/users/me', {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -383,7 +385,7 @@ function Account() {
                     <Box display="flex" alignItems="center" mb={3}>
                         <Box position="relative" display="inline-block">
                             <Avatar
-                                src={avatar || (userData.avatarUrl ? `http://localhost:5000${userData.avatarUrl}` : '')}
+                                src={avatar || (userData.avatarUrl ? `${API}${userData.avatarUrl}` : '')}
                                 onClick={handlePreview}
                                 sx={{
                                     width: 100,

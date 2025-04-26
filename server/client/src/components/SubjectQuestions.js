@@ -8,6 +8,7 @@ function SubjectQuestions() {
   const [subject, setSubject] = useState(null); 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const API = process.env.REACT_APP_API_URL;
 
   useEffect(() => {
     const fetchQuestionsAndSubject = async () => {
@@ -15,7 +16,7 @@ function SubjectQuestions() {
       setError(null);
       try {
         const token = localStorage.getItem('token');
-        const questionsResponse = await fetch(`http://localhost:5000/api/questions/bySubject/${subjectId}`, {
+        const questionsResponse = await fetch(`${API}/api/questions/bySubject/${subjectId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -27,7 +28,7 @@ function SubjectQuestions() {
         const questionsData = await questionsResponse.json();
         setQuestions(questionsData);
 
-        const subjectResponse = await fetch(`http://localhost:5000/api/subjects/${subjectId}`); 
+        const subjectResponse = await fetch(`${API}/api/subjects/${subjectId}`); 
         if (!subjectResponse.ok) {
           throw new Error(`HTTP error fetching subject! status: ${subjectResponse.status}`);
         }

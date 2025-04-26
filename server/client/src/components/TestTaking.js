@@ -37,6 +37,7 @@ function TestTaking() {
   const { subjectId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const API = process.env.REACT_APP_API_URL;
 
   // 2. state 
   const [questions, setQuestions] = useState([]);
@@ -168,7 +169,7 @@ function TestTaking() {
         completedAt: new Date().toISOString()
       };
   
-      const response = await fetch('http://localhost:5000/api/questions/submit', {
+      const response = await fetch('${API}/api/questions/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -274,7 +275,7 @@ function TestTaking() {
 
         const token = localStorage.getItem('token');
         const response = await fetch(
-          `http://localhost:5000/api/questions/bySubject/${subjectId}/${semester}?setNumber=${setNumber}`,
+          `${API}/api/questions/bySubject/${subjectId}/${semester}?setNumber=${setNumber}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,

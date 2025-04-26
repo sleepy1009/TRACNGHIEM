@@ -35,6 +35,7 @@ function Results() {
     const [subjectName, setSubjectName] = useState('');
     const [className, setClassName] = useState('');
     const { user } = useAuth();
+    const API = process.env.REACT_APP_API_URL;
 
 
     useEffect(() => {
@@ -54,7 +55,7 @@ function Results() {
     useEffect(() => {
         const fetchSubjectName = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/api/subjects/${subjectId}`);
+                const response = await fetch(`${API}/api/subjects/${subjectId}`);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }

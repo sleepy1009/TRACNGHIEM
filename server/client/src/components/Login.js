@@ -94,7 +94,7 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        const fetchUserResponse = await fetch('${API}/api/users/me', {
+        const fetchUserResponse = await fetch(`${API}/api/users/me`, {
             headers: {
                 'Authorization': `Bearer ${data.token}`, 
             },
@@ -145,7 +145,7 @@ function Login() {
 
         const data = await response.json();
         if (response.ok) {
-            const fetchUserResponse = await fetch('${API}/api/users/me', {
+            const fetchUserResponse = await fetch(`${API}/api/users/me`, {
             headers: {
                 'Authorization': `Bearer ${data.token}`,
             },

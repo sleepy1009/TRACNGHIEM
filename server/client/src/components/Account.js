@@ -222,7 +222,7 @@ function Account() {
                     return;
                 }
     
-                const userResponse = await fetch('${API}/api/users/me', {
+                const userResponse = await fetch(`${API}/api/users/me`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                     },

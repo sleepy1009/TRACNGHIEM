@@ -28,7 +28,7 @@ function TestHistory() {
       setError(null);
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('${API}/api/users/test-history', {
+        const response = await fetch(`${API}/api/users/test-history`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },

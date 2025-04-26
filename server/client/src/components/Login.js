@@ -83,7 +83,7 @@ function Login() {
 
 
     try {
-      const response = await fetch('${API}/api/users/login', {
+      const response = await fetch(`${API}/api/users/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ function Login() {
 
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     try {
-        const response = await fetch('${API}/api/auth/google', { 
+        const response = await fetch(`${API}/api/auth/google`, { 
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

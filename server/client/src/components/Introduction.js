@@ -104,7 +104,7 @@ function Introduction() {
   const fetchRankings = async () => {
     try {
       const token = localStorage.getItem('token'); 
-      const response = await fetch('${API}/api/users/rankings', {
+      const response = await fetch(`${API}/api/users/rankings`, {
         headers: {
           'Authorization': `Bearer ${token}`, 
         },
@@ -134,7 +134,7 @@ function Introduction() {
   const fetchUserStatistics = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('${API}/api/users/test-history', {
+      const response = await fetch(`${API}/api/users/test-history`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -515,7 +515,7 @@ function Introduction() {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const response = await fetch('${API}/api/classes');
+        const response = await fetch(`${API}/api/classes`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

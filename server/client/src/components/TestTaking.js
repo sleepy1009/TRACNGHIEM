@@ -169,7 +169,7 @@ function TestTaking() {
         completedAt: new Date().toISOString()
       };
   
-      const response = await fetch('${API}/api/questions/submit', {
+      const response = await fetch(`${API}/api/questions/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

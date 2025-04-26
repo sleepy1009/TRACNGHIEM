@@ -99,7 +99,7 @@ function Account() {
     const fetchUserData = async () => {
         try {
             const token = localStorage.getItem('token');
-            const response = await fetch('${API}/api/users/me', {
+            const response = await fetch(`${API}/api/users/me`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -137,7 +137,7 @@ function Account() {
     
             try {
                 const token = localStorage.getItem('token');
-                const response = await fetch('${API}/api/users/avatar', {
+                const response = await fetch(`${API}/api/users/avatar`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${token}`,
@@ -177,7 +177,7 @@ function Account() {
       const fetchUserStatistics = async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch('${API}/api/users/test-history', {
+            const response = await fetch(`${API}/api/users/test-history`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -283,7 +283,7 @@ function Account() {
 
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch('${API}/api/users/me', {
+            const response = await fetch(`${API}/api/users/me`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

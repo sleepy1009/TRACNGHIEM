@@ -24,6 +24,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Avatar,
   Stack,
   Tooltip,
   CircularProgress,
@@ -31,6 +32,7 @@ import {
   Snackbar,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import {
   School as SchoolIcon,
   Timeline as TimelineIcon,
@@ -472,42 +474,70 @@ function Introduction() {
         </DialogTitle>
         <DialogContent>
           <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table>
+          <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 'bold', width: '15%' }}>Thứ hạng</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', width: '30%' }}>Tên</TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', width: '30%' }} align="center">Điểm trung bình</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', width: '10%' }}>Thứ hạng</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', width: '40%' }}>Tên</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', width: '25%' }} align="center">Điểm trung bình</TableCell>
                   <TableCell sx={{ fontWeight: 'bold', width: '25%' }} align="center">Số bài đã làm</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rankings.map((user, index) => (
-                  <TableRow 
-                    key={user._id}
-                    sx={{
-                      backgroundColor: index < 3 ? 'rgba(255, 246, 196, 0.43)' : 'inherit',
-                      '&:hover': {
-                        backgroundColor: 'rgba(100, 175, 237, 0.1)',
-                      }
-                    }}
-                  >
-                    <TableCell>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {index < 3 ? (
-                          <StarIcon sx={{ 
-                            color: index === 0 ? 'gold' : index === 1 ? 'silver' : '#CD7F32'
-                          }} />
-                        ) : null}
-                        #{index + 1}
-                      </Box>
-                    </TableCell>
-                    <TableCell>{user.displayName}</TableCell>
-                    <TableCell align="center">{user.averageScore.toFixed(2)}</TableCell>
-                    <TableCell align="center">{user.totalTests}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+                <TableRow 
+                  key={user._id}
+                  sx={{
+                    backgroundColor: index < 3 ? 'rgba(255, 246, 196, 0.43)' : 'inherit',
+                    '&:hover': {
+                      backgroundColor: 'rgba(100, 175, 237, 0.1)',
+                    }
+                  }}
+                >
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {index < 3 ? (
+                        <StarIcon sx={{ 
+                          color: index === 0 ? 'gold' : index === 1 ? 'silver' : '#CD7F32'
+                        }} />
+                      ) : null}
+                      #{index + 1}
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                      <Avatar
+                        src={user.avatarUrl ? `${API}${user.avatarUrl}` : ''}
+                        sx={{ 
+                          width: 32, 
+                          height: 32,
+                          bgcolor: getRandomColor(),
+                          border: index < 3 ? '2.5px solid' : '2px solid',
+                          borderColor: index === 0 
+                          ? 'gold'
+                          : index === 1 
+                            ? 'silver'
+                            : index === 2 
+                              ? '#CD7F32'
+                              : 'divider',
+                          fontSize: '1rem'
+                        }}
+                      >
+                        {!user.avatarUrl && user.displayName ? user.displayName.split(' ').map(word => word[0]).join('').toUpperCase() : null}
+                      </Avatar>
+                      <Typography>{user.displayName}</Typography>
+                      {user.verified && (
+                        <Tooltip title="Đã xác thực">
+                          <VerifiedIcon sx={{ color: '#2196f3', fontSize: 20 }} />
+                        </Tooltip>
+                      )}
+                    </Box>
+                  </TableCell>
+                  <TableCell align="center">{user.averageScore.toFixed(2)}</TableCell>
+                  <TableCell align="center">{user.totalTests}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
             </Table>
           </TableContainer>
         </DialogContent>

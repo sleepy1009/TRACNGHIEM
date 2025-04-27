@@ -59,6 +59,7 @@ router.get('/', async (req, res) => {
           _id: '$userDetails._id',
           username: '$userDetails.username',
           displayName: '$userDetails.displayName',
+          avatarUrl: '$userDetails.avatarUrl',
           averageScore: 1,
           totalTests: 1
         }

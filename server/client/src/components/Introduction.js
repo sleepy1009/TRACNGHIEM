@@ -103,6 +103,22 @@ function Introduction() {
 
   const [openRankingBoard, setOpenRankingBoard] = useState(false);
   const [rankings, setRankings] = useState([]);
+  const getRandomColor = () => {
+    const colors = [
+      '#FF6B6B', 
+      '#4ECDC4', 
+      '#45B7D1', 
+      '#96CEB4', 
+      '#FFEEAD', 
+      '#D4A5A5', 
+      '#9B59B6', 
+      '#3498DB', 
+      '#E67E22', 
+      '#1ABC9C', 
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+  };
+
 
   const fetchRankings = async () => {
     try {

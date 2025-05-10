@@ -152,7 +152,9 @@ function TestTaking() {
           userAnswer: userAnswer !== undefined ? userAnswer : null,
           isCorrect: userAnswer === question.correctAnswer,
           semester: parseInt(semester),
-          setNumber: parseInt(setNumber)
+          setNumber: parseInt(setNumber),
+          level: question.level,      
+          explain: question.explain
         };
       });
       console.log("Total calculatedScore (frontend):", calculatedScore);

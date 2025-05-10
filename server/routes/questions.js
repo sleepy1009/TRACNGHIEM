@@ -43,7 +43,7 @@ router.get('/bySubject/:subjectId/:semester', authMiddleware, async (req, res) =
         }
 
         const questions = await Question.find(query)
-            .select('questionText options correctAnswer setNumber') 
+            .select('questionText options correctAnswer setNumber level explain') 
             .lean()
             .exec();
 
@@ -52,7 +52,9 @@ router.get('/bySubject/:subjectId/:semester', authMiddleware, async (req, res) =
         if (questions.length > 0) {
             console.log('Sample question:', {
                 ...questions[0],
-                correctAnswer: questions[0].correctAnswer
+                correctAnswer: questions[0].correctAnswer,
+		level: questions[0].level, 
+                explain: questions[0].explain
             });
         }
 

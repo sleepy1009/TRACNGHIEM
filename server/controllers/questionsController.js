@@ -17,7 +17,7 @@ exports.getQuestionsBySemester = async (req, res) => {
     }
 
     const questions = await Question.find(query)
-      .select('questionText options correctAnswer setNumber')
+      .select('questionText options correctAnswer setNumber level explain')
       .lean()
       .exec();
 
@@ -55,7 +55,9 @@ exports.submitAnswers = async (req, res) => {
       timeSpent,
       questionSet,
       semester,
-      setNumber
+      setNumber,
+      level,
+      explain
     } = req.body;
 
     if (!subjectId || !answers || !questionSet || !Array.isArray(questionSet)) {

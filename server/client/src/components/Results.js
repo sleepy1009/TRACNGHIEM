@@ -35,6 +35,7 @@ function Results() {
     const [subjectName, setSubjectName] = useState('');
     const [className, setClassName] = useState('');
     const { user } = useAuth();
+    const [openExplainIndex, setOpenExplainIndex] = useState(null);
     const API = process.env.REACT_APP_API_URL;
 
 
@@ -268,6 +269,10 @@ function Results() {
                                 <Typography variant="h6">
                                     Câu {index + 1}
                                 </Typography>
+                                
+                                {question.level && (
+                                    <Chip label={`Mức độ: ${question.level}`} color="info" size="small" sx={{ ml: 2 }} />
+                                )}
                             </Box>
 
                             <Typography variant="body1" sx={{ mb: 2 }}>
@@ -344,6 +349,35 @@ function Results() {
                                     );
                                 })}
                             </Grid>
+                            {question.explain && (
+                                <Box sx={{ mt: 2 }}>
+                                    <Button
+                                      variant="outlined"
+                                      size="small"
+                                      color="primary"
+                                      onClick={() => setOpenExplainIndex(openExplainIndex === index ? null : index)}
+                                      sx={{ mb: 2 , fontFamily:"Roboto Slab", borderRadius:10}}
+                                    >
+                                      {openExplainIndex === index ? "Ẩn giải thích" : "Giải thích"}
+                                    </Button>
+                                    {openExplainIndex === index && (
+                                      <Paper
+                                        elevation={1}
+                                        sx={{ p: 2, backgroundColor: "#fcfcfc", borderLeft: "3px solid #1976d2" }}
+                                      >
+                                        <Typography variant="body2" sx={{ color: "#000000" }}>
+                                          <div
+                                            className="math-tex"
+                                            dangerouslySetInnerHTML={{
+                                              __html: renderMathContent(question.explain, DOMPurify),
+                                            }}
+                                          />
+                                        </Typography>
+                                      </Paper>
+                                    )}
+                                  </Box>
+                                )}
+
                         </Paper>
                     );
                 })}

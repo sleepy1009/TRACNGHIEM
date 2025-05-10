@@ -18,7 +18,9 @@ const testResultSchema = new Schema({
     options: [String],
     correctAnswer: Number,
     userAnswer: Number,
-    semester: Number 
+    semester: Number,
+    level: [String],
+    explain: [String],
   }]
 }, { timestamps: true });
 
